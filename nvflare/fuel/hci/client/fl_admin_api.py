@@ -92,6 +92,8 @@ class FLAdminAPI(AdminAPI, FLAdminAPISpec):
         client_key="",
         upload_dir="",
         download_dir="",
+        overseer_agent=None,
+        auto_login=False,
         poc=False,
         debug=False,
     ):
@@ -118,6 +120,10 @@ class FLAdminAPI(AdminAPI, FLAdminAPISpec):
             client_key=client_key,
             upload_dir=upload_dir,
             download_dir=download_dir,
+            overseer_agent=overseer_agent,
+            auto_login=auto_login,
+            user_name="admin", #revisit this
+            password="admin",
             poc=poc,
             debug=debug,
         )
