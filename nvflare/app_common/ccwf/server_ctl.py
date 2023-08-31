@@ -273,7 +273,8 @@ class ServerSideController(Controller):
 
         self.log_info(fl_ctx, f"Waiting for clients to finish workflow {self.workflow_id}  ...")
         while not abort_signal.triggered and not self.asked_to_stop:
-            time.sleep(self.job_status_check_interval)
+            #time.sleep(self.job_status_check_interval)
+            time.sleep(10)
             done = self._check_job_status(fl_ctx)
             if done:
                 break
@@ -416,7 +417,7 @@ class ServerSideController(Controller):
         # see whether status is available
         reports = peer_ctx.get_prop(Constant.STATUS_REPORTS)
         if not reports:
-            self.log_info(fl_ctx, f"no status report from client {client_name}")
+            # self.log_info(fl_ctx, f"no status report from client {client_name}") SEAN TEST
             return
 
         my_report = reports.get(self.workflow_id)

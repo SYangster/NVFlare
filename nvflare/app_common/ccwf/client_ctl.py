@@ -191,7 +191,7 @@ class ClientSideController(Executor, ClientController):
                 return
             report = self._get_status_report()
             if not report:
-                self.log_info(fl_ctx, "nothing to report this time")
+                #self.log_info(fl_ctx, "nothing to report this time") SEAN TEST
                 return
             self._add_status_report(report, fl_ctx)
             self.last_status_report_time = report.timestamp

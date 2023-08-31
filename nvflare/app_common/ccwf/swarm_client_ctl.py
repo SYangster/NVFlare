@@ -201,10 +201,12 @@ class Gatherer(FLComponent):
             if not s.reply_time:
                 unfinished += 1
         if unfinished == 0:
+            print("UNFINISHED!!!!!!!")
             return True
 
         # timeout?
         now = time.time()
+
         if self.timeout and now - self.start_time > self.timeout:
             self.log_warning(self.fl_ctx, f"gatherer for round {self.for_round} timed out after {self.timeout} seconds")
             return True
@@ -415,7 +417,8 @@ class SwarmClientController(ClientSideController):
 
         # aggr_result could be just weight diffs, not full weights!
         # need to call shareable_to_learnable to get full weights.
-        self.log_info(fl_ctx, f"aggr result: {aggr_result}")
+        #self.log_info(fl_ctx, f"aggr result: {aggr_result}")
+        self.log_info(fl_ctx, f"aggr result: {aggr_result['DXO']['data'].keys()}") #TESTING
         global_weights = self.shareable_generator.shareable_to_learnable(aggr_result, fl_ctx)
         self.record_last_result(fl_ctx, gatherer.for_round, global_weights)
 
@@ -553,6 +556,9 @@ class SwarmClientController(ClientSideController):
 
         self.log_info(fl_ctx, f"Round {current_round} started.")
 
+        learnable = self.persistor.load(fl_ctx) #NEWW SEAN
+        fl_ctx.set_prop(AppConstants.GLOBAL_MODEL, learnable, private=True, sticky=True)
+
         # Some shareable generators assume the base model (GLOBAL_MODEL) is always available, which is true for
         # server-controlled fed-avg. But this is not true for swarm learning.
         # To make these generators happy, we create an empty global model here if not present.
@@ -562,7 +568,10 @@ class SwarmClientController(ClientSideController):
             fl_ctx.set_prop(AppConstants.GLOBAL_MODEL, base_model, private=True, sticky=True)
         global_weights = self.shareable_generator.shareable_to_learnable(task_data, fl_ctx)
 
-        self.log_info(fl_ctx, f"current global model: {global_weights}")
+        if not global_weights:
+            self.log_info(fl_ctx, f"current global model: {global_weights}")
+        if 'weights' in global_weights:
+            self.log_info(fl_ctx, f"current global model: {global_weights['weights'].keys()}")
 
         fl_ctx.set_prop(AppConstants.GLOBAL_MODEL, global_weights, private=True, sticky=True)
         fl_ctx.set_prop(AppConstants.CURRENT_ROUND, current_round, private=True, sticky=True)

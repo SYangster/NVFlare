@@ -40,7 +40,7 @@ class CrossSiteEvalServerController(ServerSideController):
         task_name_prefix=Constant.TN_PREFIX_CROSS_SITE_EVAL,
         start_task_timeout=Constant.START_TASK_TIMEOUT,
         configure_task_timeout=Constant.CONFIG_TASK_TIMEOUT,
-        eval_task_timeout=30,
+        eval_task_timeout=300,
         task_check_period: float = Constant.TASK_CHECK_INTERVAL,
         job_status_check_interval: float = Constant.JOB_STATUS_CHECK_INTERVAL,
         progress_timeout: float = Constant.WORKFLOW_PROGRESS_TIMEOUT,
