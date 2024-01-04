@@ -147,11 +147,17 @@ class LauncherExecutor(TaskExchanger):
 
         if not self._initialize_external_execution(task_name, shareable, fl_ctx, abort_signal):
             return make_reply(ReturnCode.EXECUTION_EXCEPTION)
+        
+        print(f"\n\n===== before first param converter process incoming")
 
         if self._from_nvflare_converter is not None:
-            shareable = self._from_nvflare_converter.process(shareable, fl_ctx)
+            shareable = self._from_nvflare_converter.process(task_name, shareable, fl_ctx)
+
+        print(f"\n\n===== after first param converter process incoming")
 
         result = super().execute(task_name, shareable, fl_ctx, abort_signal)
+
+        print(f"\n\n===== before param converter process outgoing")
 
         if result.get_return_code() != ReturnCode.OK:
             abort_signal.trigger("execution exception in TaskExchanger")
@@ -161,7 +167,9 @@ class LauncherExecutor(TaskExchanger):
             return make_reply(ReturnCode.EXECUTION_EXCEPTION)
 
         if self._to_nvflare_converter is not None:
-            result = self._to_nvflare_converter.process(result, fl_ctx)
+            result = self._to_nvflare_converter.process(task_name, result, fl_ctx)
+
+        print(f"\n\n===== after param converter process outgoing")
 
         self._finalize_external_execution(task_name, shareable, fl_ctx, abort_signal)
 
@@ -241,6 +249,9 @@ class LauncherExecutor(TaskExchanger):
         self.log_info(fl_ctx, f"External execution for task ({task_name}) is launched.")
         # wait for external execution to set up their pipe_handler
         setup_success = self._wait_external_setup(task_name, fl_ctx, abort_signal)
+
+        print(f"+++++++ after _wait_external_setup")
+
         if not setup_success:
             self.log_error(fl_ctx, "External execution set up failed.")
             abort_signal.trigger("External execution set up failed.")

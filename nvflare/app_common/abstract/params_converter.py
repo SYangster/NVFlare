@@ -22,10 +22,14 @@ from nvflare.apis.shareable import Shareable
 
 
 class ParamsConverter(Filter, ABC):
-    def process(self, shareable: Shareable, fl_ctx: FLContext) -> Shareable:
-        dxo = from_shareable(shareable)
-        dxo.data = self.convert(dxo.data, fl_ctx)
-        dxo.update_shareable(shareable)
+    def __init__(self, supported_tasks=None):
+        self.supported_tasks = supported_tasks
+
+    def process(self, task_name: str, shareable: Shareable, fl_ctx: FLContext) -> Shareable:
+        if not self.supported_tasks or task_name in self.supported_tasks:
+            dxo = from_shareable(shareable)
+            dxo.data = self.convert(dxo.data, fl_ctx)
+            dxo.update_shareable(shareable)
         return shareable
 
     @abstractmethod

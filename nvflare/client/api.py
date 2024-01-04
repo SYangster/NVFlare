@@ -192,6 +192,7 @@ def is_train() -> bool:
 
 
 def is_evaluate() -> bool:
+    #print(f"\n\n inside is_evaluate()")
     model_registry = get_model_registry()
     if model_registry.rank != "0":
         raise RuntimeError("only rank 0 can call is_evaluate!")
