@@ -139,6 +139,7 @@ class BaseWFCommunicator(FLComponent, WFCommunicatorSpec, ControllerSpec, ABC):
     def send_to_peers_and_wait(self, pay_load, send_order: SendOrder = SendOrder.SEQUENTIAL):
         abort_signal = self.fl_ctx.get_prop("abort_signal")
         task, _, targets = self.get_payload_task(pay_load)
+        print(f"\n\t{targets=}")
         self.send_and_wait(
             task=task,
             fl_ctx=self.fl_ctx,
@@ -214,7 +215,7 @@ class BaseWFCommunicator(FLComponent, WFCommunicatorSpec, ControllerSpec, ABC):
             props={},
             timeout=self.task_timeout,
             before_task_sent_cb=None,
-            result_received_cb=self._result_received_cb,
+            result_received_cb=pay_load.get("task_callback")#self._result_received_cb,
         )
 
         return task, min_responses, targets
@@ -240,6 +241,8 @@ class BaseWFCommunicator(FLComponent, WFCommunicatorSpec, ControllerSpec, ABC):
         result = client_task.result
         rc = result.get_return_code()
         results: Dict[str, any] = {STATUS: rc}
+
+        print(f"\n\tRESULT {result=}, {client_task=}")
 
         if rc == ReturnCode.OK:
             self.log_info(fl_ctx, f"Received result entries from client:{client_name} for task {task_name}")

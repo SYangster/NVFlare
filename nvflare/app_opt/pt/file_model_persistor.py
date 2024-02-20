@@ -172,6 +172,7 @@ class PTFileModelPersistor(ModelPersistor):
                 )
                 return
         elif self.model and not isinstance(self.model, torch.nn.Module):
+            print(f"\n\n\t{self.model=}")
             self.system_panic(
                 reason="expect model to be torch.nn.Module but got {}".format(type(self.model)), fl_ctx=fl_ctx
             )

@@ -125,6 +125,7 @@ class ServerRunner(TBI):
                     self.log_info(fl_ctx, "starting workflow {} ({}) ...".format(wf.id, type(wf.responder)))
 
                     fl_ctx.set_prop(FLContextKey.WORKFLOW, wf.id, sticky=True)
+                    print(f"\n\t\t Workflow ID {wf.id}")
                     wf.responder.initialize_run(fl_ctx)
 
                     self.log_info(fl_ctx, "Workflow {} ({}) started".format(wf.id, type(wf.responder)))

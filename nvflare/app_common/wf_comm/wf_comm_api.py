@@ -66,8 +66,10 @@ class WFCommAPI(WFCommAPISpec):
     ) -> Union[int, Dict[str, Dict[str, FLModel]]]:
 
         meta = {} if meta is None else meta
-        msg_payload = self._prepare_input_payload(task_name, data, meta, min_responses, targets)
-        self.register_callback(callback)
+        msg_payload = self._prepare_input_payload(task_name, data, meta, min_responses, targets, callback)
+        #self.register_callback(callback)
+        #callback = None
+
         self.ctrl.broadcast_to_peers_and_wait(msg_payload)
 
         if callback is None:
@@ -85,19 +87,23 @@ class WFCommAPI(WFCommAPISpec):
         min_responses: int,
         data: any,
         meta: dict = None,
-        send_order: SendOrder = SendOrder.SEQUENTIAL,
+        #send_order: SendOrder = SendOrder.SEQUENTIAL,
         targets: Optional[List[str]] = None,
+        send_order: SendOrder = SendOrder.SEQUENTIAL,
         callback: Callable = None,
     ):
         meta = {} if meta is None else meta
-        msg_payload = self._prepare_input_payload(task_name, data, meta, min_responses, targets)
+        print(f"\n\t send and wait targets {targets=}")
+        msg_payload = self._prepare_input_payload(task_name, data, meta, min_responses, targets, callback)
 
-        if callback is not None:
-            self.register_callback(callback)
+        # if callback is not None:
+        #     self.register_callback(callback)
 
         self.ctrl.send_to_peers_and_wait(msg_payload, send_order)
 
-        if callback is not None:
+        # if callback is not None:
+        #     return self._get_results(task_name)
+        if callback is None:
             return self._get_results(task_name)
 
     def relay_and_wait(
@@ -207,7 +213,7 @@ class WFCommAPI(WFCommAPISpec):
             site_task_results.append(site_result)
             self.task_results[task] = site_task_results
 
-    def _prepare_input_payload(self, task_name, data, meta, min_responses, targets):
+    def _prepare_input_payload(self, task_name, data, meta, min_responses, targets, task_callback):
 
         if data and isinstance(data, FLModel):
             start_round = data.start_round
@@ -229,5 +235,8 @@ class WFCommAPI(WFCommAPISpec):
             AppConstants.START_ROUND: start_round,
             DATA: data,
             TARGET_SITES: targets,
+            "task_callback": task_callback,
         }
+
+        print(f"\n\tMSG payload targets {targets=}")
         return msg_payload

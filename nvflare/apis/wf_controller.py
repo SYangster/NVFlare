@@ -15,11 +15,13 @@ from abc import ABC, abstractmethod
 from typing import Callable, List, Optional
 
 from nvflare.app_common import wf_comm
+from nvflare.apis.controller_spec import SendOrder
 
 
 class WFController(ABC):
     def __init__(self):
         self.communicator = wf_comm.get_wf_comm_api()
+        print(f"\n\n\t\t INIT COMMUNICATOR {self.communicator=}")
 
     @abstractmethod
     def run(self):
@@ -43,9 +45,11 @@ class WFController(ABC):
         data: any,
         meta: dict = None,
         targets: Optional[List[str]] = None,
-        send_order: str = "sequential",
+        #send_order: str = "sequential",
+        send_order: SendOrder = SendOrder.SEQUENTIAL,
         callback: Callable = None,
     ):
+        print(f"\n\t wfcontroller {targets=}")
         return self.communicator.send_and_wait(task_name, min_responses, data, meta, targets, send_order, callback)
 
     def relay_and_wait(

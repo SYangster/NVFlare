@@ -342,7 +342,13 @@ class ClientSideController(Executor, TaskController):
 
     def execute(self, task_name: str, shareable: Shareable, fl_ctx: FLContext, abort_signal: Signal) -> Shareable:
         if task_name == self.configure_task_name:
-            self.config = shareable[Constant.CONFIG]
+            print(f"\n\t\t SHAREABLE {shareable=}")
+            #self.config = shareable[Constant.CONFIG]
+            from nvflare.apis.dxo import from_shareable
+            dxo = from_shareable(shareable)
+            self.config = dxo.data[Constant.CONFIG]
+            print(f"{self.config}")
+
             my_wf_id = self.get_config_prop(FLContextKey.WORKFLOW)
             if not my_wf_id:
                 self.log_error(fl_ctx, "missing workflow id in configuration!")
