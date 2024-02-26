@@ -79,6 +79,8 @@ class BaseWFCommunicator(FLComponent, WFCommunicatorSpec, ControllerSpec, ABC):
         self.publish_comm_api(fl_ctx)
         self.log_info(fl_ctx, "workflow controller started")
 
+        super().start_controller(fl_ctx)
+
     def register_decomposers(self):
         decomposer_register = self.engine.get_component("decomposer_register")
         if decomposer_register:
@@ -218,7 +220,8 @@ class BaseWFCommunicator(FLComponent, WFCommunicatorSpec, ControllerSpec, ABC):
             props={},
             timeout=self.task_timeout,
             before_task_sent_cb=None,
-            result_received_cb=self._result_received_cb,
+            #result_received_cb=self._result_received_cb,
+            result_received_cb=pay_load.get("task_callback")#self._result_received_cb,
         )
 
         return task, min_responses, targets

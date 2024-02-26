@@ -15,8 +15,10 @@ from abc import ABC, abstractmethod
 from typing import Callable, List, Optional
 
 from nvflare.app_common import wf_comm
+from nvflare.apis.controller_spec import SendOrder
 
 from .fl_constant import ReturnCode
+
 
 ABORT_WHEN_IN_ERROR = {
     ReturnCode.EXECUTION_EXCEPTION: True,
@@ -53,7 +55,8 @@ class WFController(ABC):
         data: any,
         meta: dict = None,
         targets: Optional[List[str]] = None,
-        send_order: str = "sequential",
+        #send_order: str = "sequential",
+        send_order: SendOrder = SendOrder.SEQUENTIAL,
         callback: Callable = None,
     ):
         return self.communicator.send_and_wait(task_name, min_responses, data, meta, targets, send_order, callback)

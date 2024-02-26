@@ -55,7 +55,7 @@ class ClientStatus:
 class ServerSideController(Controller):
     def __init__(
         self,
-        num_rounds: int,
+        num_rounds: int = 5,
         start_round: int = 0,
         task_name_prefix: str = "wf",
         configure_task_timeout=Constant.CONFIG_TASK_TIMEOUT,
