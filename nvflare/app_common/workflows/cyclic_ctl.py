@@ -19,7 +19,7 @@ from nvflare.apis.client import Client
 from nvflare.apis.fl_constant import ReturnCode
 from nvflare.apis.fl_context import FLContext
 from nvflare.apis.impl.controller import ClientTask, Controller, Task
-from nvflare.apis.shareable import Shareable
+from nvflare.apis.shareable import Shareable, make_reply
 from nvflare.apis.signal import Signal
 from nvflare.app_common.abstract.learnable_persistor import LearnablePersistor
 from nvflare.app_common.abstract.shareable_generator import ShareableGenerator
@@ -108,8 +108,23 @@ class CyclicController(Controller):
         self._last_client = None
         self._order = order
 
+    def get_config_prop(self, name: str, default=None):
+        """
+        Get a specified config property.
+
+        Args:
+            name: name of the property
+            default: default value to return if the property is not defined.
+
+        Returns:
+
+        """
+        if not self.config:
+            return default
+        return self.config.get(name, default)
+
     def start_controller(self, fl_ctx: FLContext):
-        self.log_debug(fl_ctx, "starting controller")
+        self.log_info(fl_ctx, "starting controller")
         self.persistor = self._engine.get_component(self.persistor_id)
         self.shareable_generator = self._engine.get_component(self.shareable_generator_id)
         if not isinstance(self.persistor, LearnablePersistor):
@@ -127,10 +142,13 @@ class CyclicController(Controller):
         fl_ctx.set_prop(AppConstants.NUM_ROUNDS, self._num_rounds, private=True, sticky=True)
         self.fire_event(AppEventType.INITIAL_MODEL_LOADED, fl_ctx)
 
-        self._participating_clients = self._engine.get_clients()
-        if len(self._participating_clients) <= 1:
-            self.system_panic("Not enough client sites.", fl_ctx)
-        self._last_client = None
+        # print(f"\n\t{type(self._engine)}")
+        # from nvflare.app_common.ccwf.common import Constant
+        # self._participating_clients = self.get_config_prop(Constant.CLIENTS)
+        # #self._participating_clients = ["site-1", "site-2"]#self._engine.get_clients()
+        # if len(self._participating_clients) <= 1:
+        #     self.system_panic("Not enough client sites.", fl_ctx)
+        # self._last_client = None
 
     def _get_relay_orders(self, fl_ctx: FLContext):
         targets = list(self._participating_clients)
@@ -175,20 +193,29 @@ class CyclicController(Controller):
         task.data.add_cookie(AppConstants.CONTRIBUTION_ROUND, self._current_round)
 
     def control_flow(self, abort_signal: Signal, fl_ctx: FLContext):
+
+        from nvflare.app_common.ccwf.common import Constant
+        self._participating_clients = self.get_config_prop(Constant.CLIENTS)
+        print(f"PARTICIPATING CLIENTS {self._participating_clients}")
+        #self._participating_clients = ["site-1", "site-2"]#self._engine.get_clients()
+        if len(self._participating_clients) <= 1:
+            self.system_panic("Not enough client sites.", fl_ctx)
+        self._last_client = None
+
         try:
-            self.log_debug(fl_ctx, "Cyclic starting.")
+            self.log_info(fl_ctx, "Cyclic starting.")
 
             for self._current_round in range(self._start_round, self._end_round):
                 if abort_signal.triggered:
                     return
 
-                self.log_debug(fl_ctx, "Starting current round={}.".format(self._current_round))
+                self.log_info(fl_ctx, "Starting current round={}.".format(self._current_round))
                 fl_ctx.set_prop(AppConstants.CURRENT_ROUND, self._current_round, private=True, sticky=True)
 
                 # Task for one cyclic
                 targets = self._get_relay_orders(fl_ctx)
                 targets_names = [t.name for t in targets]
-                self.log_debug(fl_ctx, f"Relay on {targets_names}")
+                self.log_info(fl_ctx, f"Relay on {targets_names}")
 
                 shareable = self.shareable_generator.learnable_to_shareable(self._last_learnable, fl_ctx)
                 shareable.set_header(AppConstants.CURRENT_ROUND, self._current_round)
@@ -199,11 +226,12 @@ class CyclicController(Controller):
                     name=self.task_name,
                     data=shareable,
                     result_received_cb=self._process_result,
+                    timeout=300, #testing
                 )
 
-                self.relay_and_wait(
+                self.relay_and_wait( #need to implement this for client side
                     task=task,
-                    targets=targets,
+                    targets=targets_names,#targets,
                     task_assignment_timeout=self.task_assignment_timeout,
                     fl_ctx=fl_ctx,
                     dynamic_targets=False,
@@ -222,7 +250,8 @@ class CyclicController(Controller):
                     and (self._current_round + 1) % self._snapshot_every_n_rounds == 0
                 ):
                     # Call the self._engine to persist the snapshot of all the FLComponents
-                    self._engine.persist_components(fl_ctx, completed=False)
+                    #self._engine.persist_components(fl_ctx, completed=False)
+                    pass
 
                 self.log_debug(fl_ctx, "Ending current round={}.".format(self._current_round))
                 gc.collect()
@@ -232,6 +261,8 @@ class CyclicController(Controller):
             error_msg = f"Cyclic control_flow exception: {secure_format_exception(e)}"
             self.log_error(fl_ctx, error_msg)
             self.system_panic(error_msg, fl_ctx)
+
+        return make_reply(ReturnCode.OK)
 
     def stop_controller(self, fl_ctx: FLContext):
         self.persistor.save(learnable=self._last_learnable, fl_ctx=fl_ctx)

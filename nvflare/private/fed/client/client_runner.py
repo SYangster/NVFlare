@@ -234,7 +234,7 @@ class ClientRunner(TBI):
                 msg=f"submit result: {ReturnCode.RUN_MISMATCH}",
             )
 
-        executor = self.find_executor(task.name)
+        executor = self.find_executor(task.name) #### where to set_comm()?
         if not executor:
             self.log_error(fl_ctx, f"bad task assignment: no executor available for task {task.name}")
             return self._reply_and_audit(
@@ -298,7 +298,11 @@ class ClientRunner(TBI):
             add_job_audit_event(fl_ctx=fl_ctx, msg=f"invoked executor {executor_name}")
 
             try:
-                reply = executor.execute(task.name, task.data, fl_ctx, abort_signal)
+                reply = executor.execute(task.name, task.data, fl_ctx, abort_signal) #if this executor is also a client-side controller, where to set communicator??
+                # we have CyclicController(Controller) + server communicator composition : which is server side, we want to reuse this for client side
+                # CyclicController(Controller) + ccwf communicator composition : we want this class to be unchanged, instead need to have an executor in front of it
+                #    executor { client side controller executor }
+                #    controller { CyclicController(Controller) + ccwf communicator : where to set this communicator ? set_comm() where}
             finally:
                 if abort_signal.triggered:
                     return self._reply_and_audit(

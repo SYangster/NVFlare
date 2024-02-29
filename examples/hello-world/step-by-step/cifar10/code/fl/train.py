@@ -138,6 +138,7 @@ def main():
                     if i % 2000 == 1999:  # print every 2000 mini-batches
                         print(f"({client_id}) [{epoch + 1}, {i + 1:5d}] loss: {running_loss / 2000:.3f}")
                         running_loss = 0.0
+                        break
 
             print(f"({client_id}) Finished Training")
 
@@ -167,6 +168,7 @@ def main():
         # (6) performing evaluate task on received model
         elif flare.is_evaluate():
             accuracy = evaluate(input_model.params)
+            print(f"({client_id}) accuracy: {accuracy}")
             flare.send(flare.FLModel(metrics={"accuracy": accuracy}))
 
         # (7) performing submit_model task to obtain best local model

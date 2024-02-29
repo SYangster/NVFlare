@@ -212,10 +212,11 @@ class ServerSideController(Controller):
         # GET STARTED
         self.log_info(fl_ctx, f"Configuring clients {self.participating_clients} for workflow {self.workflow_id}")
 
+        clients_test = self._engine.get_clients()
         learn_config = {
             Constant.PRIVATE_P2P: self.private_p2p,
             Constant.TASK_NAME_PREFIX: self.task_name_prefix,
-            Constant.CLIENTS: self.participating_clients,
+            Constant.CLIENTS: clients_test,#self.participating_clients,
             Constant.START_CLIENT: self.starting_client,
             Constant.RESULT_CLIENTS: self.result_clients,
             AppConstants.NUM_ROUNDS: self.num_rounds,
@@ -274,7 +275,7 @@ class ServerSideController(Controller):
             task = Task(
                 name=self.start_task_name,
                 data=shareable,
-                timeout=self.start_task_timeout,
+                timeout=600,#TESTING self.start_task_timeout,
                 result_received_cb=self._process_start_reply,
             )
 
@@ -445,7 +446,7 @@ class ServerSideController(Controller):
         # see whether status is available
         reports = peer_ctx.get_prop(Constant.STATUS_REPORTS)
         if not reports:
-            self.log_info(fl_ctx, f"no status report from client {client_name}")
+            self.log_debug(fl_ctx, f"no status report from client {client_name}")
             return
 
         my_report = reports.get(self.workflow_id)

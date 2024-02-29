@@ -32,6 +32,10 @@ from nvflare.app_common.ccwf.common import Constant, ResultType, StatusReport, m
 from nvflare.fuel.utils.validation_utils import check_non_empty_str, check_number_range, check_positive_number
 from nvflare.security.logging import secure_format_traceback
 
+from nvflare.app_common.workflows.cyclic_ctl import CyclicController
+from nvflare.apis.impl.wf_comm_client import WFCommClient
+
+
 
 class _LearnTask:
     def __init__(self, task_name: str, task_data: Shareable, fl_ctx: FLContext):
@@ -41,7 +45,7 @@ class _LearnTask:
         self.abort_signal = Signal()
 
 
-class ClientSideController(Executor, TaskController):
+class ClientSideExecutor(Executor):#, TaskController):
     def __init__(
         self,
         task_name_prefix: str,
@@ -75,7 +79,7 @@ class ClientSideController(Executor, TaskController):
         check_number_range("final_result_ack_timeout", final_result_ack_timeout, min_value=1.0)
 
         Executor.__init__(self)
-        TaskController.__init__(self)
+        #TaskController.__init__(self)
         self.task_name_prefix = task_name_prefix
         self.start_task_name = make_task_name(task_name_prefix, Constant.BASENAME_START)
         self.configure_task_name = make_task_name(task_name_prefix, Constant.BASENAME_CONFIG)
@@ -117,6 +121,10 @@ class ClientSideController(Executor, TaskController):
         self.best_round = 0
         self.workflow_done = False
 
+        #NEWWW
+        self.controller = CyclicController(num_rounds=2)
+        
+
     def get_config_prop(self, name: str, default=None):
         """
         Get a specified config property.
@@ -133,7 +141,18 @@ class ClientSideController(Executor, TaskController):
         return self.config.get(name, default)
 
     def start_run(self, fl_ctx: FLContext):
-        self.start_controller(fl_ctx)
+        #self.start_controller(fl_ctx)
+
+        comm = WFCommClient()
+        #comm.initialize_run(fl_ctx)
+        self.controller.set_communicator(comm)
+
+        #self.controller.config = self.config
+
+        self.controller.initialize_run(fl_ctx)
+
+        #self.controller.start_controller(fl_ctx)
+
         self.engine = fl_ctx.get_engine()
         if not self.engine:
             self.system_panic("no engine", fl_ctx)
@@ -252,97 +271,10 @@ class ClientSideController(Executor, TaskController):
     def topic_for_my_workflow(self, base_topic: str):
         return f"{base_topic}.{self.workflow_id}"
 
-    def broadcast_final_result(
-        self, fl_ctx: FLContext, result_type: str, result: Learnable, metric=None, round_num=None
-    ):
-        error = None
-        targets = self.get_config_prop(Constant.RESULT_CLIENTS)
-        if not targets:
-            self.log_info(fl_ctx, f"no clients configured to receive final {result_type} result")
-        else:
-            try:
-                num_errors = self._try_broadcast_final_result(fl_ctx, result_type, result, metric, round_num)
-                if num_errors > 0:
-                    error = ReturnCode.EXECUTION_EXCEPTION
-            except:
-                self.log_error(fl_ctx, f"exception broadcast final {result_type} result {secure_format_traceback()}")
-                error = ReturnCode.EXECUTION_EXCEPTION
-
-        if result_type == ResultType.BEST:
-            action = "finished_broadcast_best_result"
-            all_done = False
-        else:
-            action = "finished_broadcast_last_result"
-            all_done = True
-        self.update_status(action=action, error=error, all_done=all_done)
-
-    def _try_broadcast_final_result(
-        self, fl_ctx: FLContext, result_type: str, result: Learnable, metric=None, round_num=None
-    ):
-        targets = self.get_config_prop(Constant.RESULT_CLIENTS)
-
-        assert isinstance(targets, list)
-        if self.me in targets:
-            targets.remove(self.me)
-
-        if len(targets) == 0:
-            # no targets to receive the result!
-            self.log_info(fl_ctx, f"no targets to receive {result_type} result")
-            return 0
-
-        shareable = Shareable()
-        shareable.set_header(Constant.RESULT_TYPE, result_type)
-        if metric is not None:
-            shareable.set_header(Constant.METRIC, metric)
-        if round_num is not None:
-            shareable.set_header(Constant.ROUND, round_num)
-        shareable[Constant.RESULT] = result
-
-        self.log_info(
-            fl_ctx, f"broadcasting {result_type} result with metric {metric} at round {round_num} to clients {targets}"
-        )
-
-        self.update_status(action=f"broadcast_{result_type}_result")
-
-        task = Task(
-            name=self.report_final_result_task_name,
-            data=shareable,
-            timeout=int(self.final_result_ack_timeout),
-            secure=self.is_task_secure(fl_ctx),
-        )
-
-        resp = self.broadcast_and_wait(
-            task=task,
-            targets=targets,
-            min_responses=len(targets),
-            fl_ctx=fl_ctx,
-        )
-
-        assert isinstance(resp, dict)
-        num_errors = 0
-        for t in targets:
-            reply = resp.get(t)
-            if not isinstance(reply, Shareable):
-                self.log_error(
-                    fl_ctx,
-                    f"bad response for {result_type} result from client {t}: "
-                    f"reply must be Shareable but got {type(reply)}",
-                )
-                num_errors += 1
-                continue
-
-            rc = reply.get_return_code(ReturnCode.OK)
-            if rc != ReturnCode.OK:
-                self.log_error(fl_ctx, f"bad response for {result_type} result from client {t}: {rc}")
-                num_errors += 1
-
-        if num_errors == 0:
-            self.log_info(fl_ctx, f"successfully broadcast {result_type} result to {targets}")
-        return num_errors
-
     def execute(self, task_name: str, shareable: Shareable, fl_ctx: FLContext, abort_signal: Signal) -> Shareable:
         if task_name == self.configure_task_name:
             self.config = shareable[Constant.CONFIG]
+            self.controller.config = self.config #neww
             my_wf_id = self.get_config_prop(FLContextKey.WORKFLOW)
             if not my_wf_id:
                 self.log_error(fl_ctx, "missing workflow id in configuration!")
@@ -369,10 +301,16 @@ class ClientSideController(Executor, TaskController):
 
             learnable = fl_ctx.get_prop(AppConstants.GLOBAL_MODEL)
             initial_model = self.shareable_generator.learnable_to_shareable(learnable, fl_ctx)
-            return self.start_workflow(initial_model, fl_ctx, abort_signal)
+            return self.controller.control_flow(abort_signal, fl_ctx)
+            #return self.start_workflow(initial_model, fl_ctx, abort_signal)
+            # self.ctrl init from config in json_config_client
+            # self.ctrl.start_workflow()
 
         elif task_name == self.do_learn_task_name:
             return self._process_learn_request(shareable, fl_ctx)
+            # self.ctrl init from config in json_config_client
+            # self.ctrl.start_workflow()
+            # send learn task to controller
 
         elif task_name == self.report_final_result_task_name:
             return self._process_final_result(shareable, fl_ctx)
@@ -380,22 +318,6 @@ class ClientSideController(Executor, TaskController):
         else:
             self.log_error(fl_ctx, f"Could not handle task: {task_name}")
             return make_reply(ReturnCode.TASK_UNKNOWN)
-
-    @abstractmethod
-    def start_workflow(self, shareable: Shareable, fl_ctx: FLContext, abort_signal: Signal) -> Shareable:
-        """
-        This is called for the subclass to start the workflow.
-        This only happens on the starting_client.
-
-        Args:
-            shareable: the initial task data (e.g. initial model weights)
-            fl_ctx: FL context
-            abort_signal: abort signal for task execution
-
-        Returns:
-
-        """
-        pass
 
     def _get_status_report(self):
         with self.status_lock:
@@ -483,21 +405,21 @@ class ClientSideController(Executor, TaskController):
             status_dict = status.to_dict()
             self.logger.info(f"updated my last status: {status_dict}")
 
-    @abstractmethod
-    def do_learn_task(self, name: str, data: Shareable, fl_ctx: FLContext, abort_signal: Signal):
-        """This is called to do a Learn Task.
-        Subclass must implement this method.
+    # @abstractmethod
+    # def do_learn_task(self, name: str, data: Shareable, fl_ctx: FLContext, abort_signal: Signal):
+    #     """This is called to do a Learn Task.
+    #     Subclass must implement this method.
 
-        Args:
-            name: task name
-            data: task data
-            fl_ctx: FL context of the task
-            abort_signal: abort signal for the task execution
+    #     Args:
+    #         name: task name
+    #         data: task data
+    #         fl_ctx: FL context of the task
+    #         abort_signal: abort signal for the task execution
 
-        Returns:
+    #     Returns:
 
-        """
-        pass
+    #     """
+    #     pass
 
     def _process_final_result(self, request: Shareable, fl_ctx: FLContext) -> Shareable:
         peer_ctx = fl_ctx.get_peer_context()

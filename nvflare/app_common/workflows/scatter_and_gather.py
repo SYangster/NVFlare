@@ -249,6 +249,7 @@ class ScatterAndGather(Controller):
                     result_received_cb=self._process_train_result,
                 )
 
+                print("\t\n before SAG broadcast and wait\n")
                 self.broadcast_and_wait(
                     task=train_task,
                     min_responses=self._min_clients,
@@ -256,6 +257,7 @@ class ScatterAndGather(Controller):
                     fl_ctx=fl_ctx,
                     abort_signal=abort_signal,
                 )
+                print("\t\n after SAG broadcast and wait\n")
 
                 if self._check_abort_signal(fl_ctx, abort_signal):
                     return
