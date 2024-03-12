@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import List, Union
+from typing import List, Optional, Union
 
 from nvflare.apis.client import Client
 from nvflare.apis.controller_spec import ClientTask, SendOrder, Task, TaskCompletionStatus
@@ -80,7 +80,17 @@ class WFCommClient(FLComponent, WFCommSpec):
         fl_ctx.set_prop(FLContextKey.TASK_DATA, task.data, sticky=False, private=True)
         self.fire_event(EventType.AFTER_TASK_DATA_FILTER, fl_ctx)
 
+        if targets is None: #newww if none default to all clients
+            print(f"\n\t engine.all_clients {engine.all_clients.values()}")
+            targets = engine.all_clients.values()
+
+        # target_names = []
+        # for t in targets:
+        #     print(f"name {t.name}")
+        #     target_names.append(t.name)
+
         target_names = get_target_names(targets)
+        #print(f"\n\t {target_names=}")
         _, invalid_names = engine.validate_targets(target_names)
         if invalid_names:
             raise ValueError(f"invalid target(s): {invalid_names}")
@@ -97,11 +107,12 @@ class WFCommClient(FLComponent, WFCommSpec):
             #     return self._make_error_reply(ReturnCode.ERROR, targets)
 
         if task.timeout <= 0:
-            raise ValueError(f"The task timeout must > 0. But got {task.timeout}")
+            task.timeout = 10 #TESTING DEFAULT
+            #raise ValueError(f"The task timeout must > 0. But got {task.timeout}")
 
         request.set_header(ReservedKey.TASK_NAME, task.name)
         replies = engine.send_aux_request(
-            targets=targets,
+            targets=target_names,#targets,
             topic=ReservedTopic.DO_TASK,
             request=request,
             timeout=task.timeout,
@@ -157,10 +168,15 @@ class WFCommClient(FLComponent, WFCommSpec):
                 task.completion_status = TaskCompletionStatus.ERROR
                 task.exception = e
                 return self._make_error_reply(ReturnCode.ERROR, targets)
+            
+        print(f"\n\t wf_comm_client 1 {task.client_tasks=}")
 
         replies = {}
         for client_task in task.client_tasks:
             replies[client_task.client.name] = client_task.result
+            #print(f"\n\t wf_comm_client 2 {client_task.result=}")
+
+        #print(f"\n\t wf_comm_client 3 {replies=}")
         return replies
 
     def _make_error_reply(self, error_type, targets):
@@ -243,6 +259,44 @@ class WFCommClient(FLComponent, WFCommSpec):
         replies = {}
         for target in targets:
             reply = self.broadcast_and_wait(task, fl_ctx, [target], abort_signal=abort_signal)
+            replies.update(reply)
+        return replies
+
+    #TODO
+    def relay(
+        self,
+        task: Task,
+        fl_ctx: FLContext,
+        targets: Union[List[Client], List[str], None] = None,
+        send_order: SendOrder = SendOrder.SEQUENTIAL,
+        task_assignment_timeout: int = 0,
+        task_result_timeout: int = 0,
+        dynamic_targets: bool = True,
+    ):
+        engine = fl_ctx.get_engine()
+
+        #self._validate_target(engine, targets)
+
+        return self.relay_and_wait(task, fl_ctx, targets, send_order, task_assignment_timeout)
+
+    def relay_and_wait(
+       self,
+        task: Task,
+        fl_ctx: FLContext,
+        targets: Union[List[Client], List[str], None] = None,
+        send_order=SendOrder.SEQUENTIAL,
+        task_assignment_timeout: int = 0,
+        task_result_timeout: int = 0,
+        dynamic_targets: bool = True,
+        abort_signal: Optional[Signal] = None,
+    ):
+        engine = fl_ctx.get_engine()
+
+        ##self._validate_target(engine, targets)
+
+        replies = {}
+        for target in targets: #TODO use send_order, what to do about send vs relay?
+            reply = self.send_and_wait(task, fl_ctx, [target], abort_signal=abort_signal)
             replies.update(reply)
         return replies
 

@@ -276,7 +276,7 @@ class ServerSideController(Controller):
             task = Task(
                 name=self.start_task_name,
                 data=shareable,
-                timeout=self.start_task_timeout,
+                timeout=600,#TESTING self.start_task_timeout,
                 result_received_cb=self._process_start_reply,
             )
 

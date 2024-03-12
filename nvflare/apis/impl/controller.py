@@ -71,7 +71,7 @@ class Controller(FLComponent, ControllerSpec, ABC):
         wait_time_after_min_received: int = 0,
         abort_signal: Optional[Signal] = None,
     ):
-        self.communicator.broadcast_and_wait(
+        return self.communicator.broadcast_and_wait(
             task, fl_ctx, targets, min_responses, wait_time_after_min_received, abort_signal
         )
 

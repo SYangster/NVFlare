@@ -127,6 +127,9 @@ class ClientRunManager(ClientEngineExecutorSpec):
         return self.fl_ctx_mgr.new_context()
 
     def send_task_result(self, result: Shareable, fl_ctx: FLContext, timeout=None) -> bool:
+
+        print(f"\n\t client_run_manager send_task_result {result=}")
+
         push_result = self.client.push_results(result, fl_ctx, timeout)  # push task execution results
         if push_result == CellReturnCode.OK:
             return True
@@ -174,6 +177,12 @@ class ClientRunManager(ClientEngineExecutorSpec):
             if client_name == c.name:
                 return c
         return None
+
+    def get_clients(self):
+        return list(self.all_clients.values())
+
+    def persist_components(self, fl_ctx: FLContext, completed: bool):
+        self.logger.warning(f"will not persist components, not supported by {self.__class__.__name__}")
 
     def get_widget(self, widget_id: str) -> Widget:
         return self.widgets.get(widget_id)

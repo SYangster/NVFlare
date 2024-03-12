@@ -545,6 +545,7 @@ class WFCommServer(FLComponent, WFCommSpec):
             abort_signal (Optional[Signal], optional): as this is a blocking call, this abort_signal informs
                 this method to return. Defaults to None.
         """
+        print(f"\n\t wf_comm_server broadcast and wait!!")
         self.broadcast(
             task=task,
             fl_ctx=fl_ctx,

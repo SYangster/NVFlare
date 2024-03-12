@@ -116,7 +116,7 @@ class CyclicController(Controller):
         self._allow_early_termination = allow_early_termination
 
     def start_controller(self, fl_ctx: FLContext):
-        self.log_debug(fl_ctx, "starting controller")
+        self.log_info(fl_ctx, "starting controller")
         self.persistor = self._engine.get_component(self.persistor_id)
         self.shareable_generator = self._engine.get_component(self.shareable_generator_id)
         if not isinstance(self.persistor, LearnablePersistor):
@@ -134,7 +134,11 @@ class CyclicController(Controller):
         fl_ctx.set_prop(AppConstants.NUM_ROUNDS, self._num_rounds, private=True, sticky=True)
         self.fire_event(AppEventType.INITIAL_MODEL_LOADED, fl_ctx)
 
-        self._participating_clients: List[Client] = self._engine.get_clients()
+        #self._participating_clients: List[Client] = self._engine.get_clients()
+        self._participating_clients = self._engine.get_clients()
+        # self._engine.get_all_clients_from_server(fl_ctx)
+        # self._participating_clients = list(self._engine.all_clients.values())
+        print(f"\n\t START CONTROLLER {self._participating_clients} \n")
         if len(self._participating_clients) <= 1:
             self.system_panic("Not enough client sites.", fl_ctx)
         self._last_client = None
@@ -163,6 +167,7 @@ class CyclicController(Controller):
                 if self._order == RelayOrder.RANDOM_WITHOUT_SAME_IN_A_ROW and self._last_client == targets[0]:
                     targets.append(targets.pop(0))
         self._last_client = targets[-1]
+        print(f"\n\t GET RELAY ORDERS targets {targets} \n")
         return targets
 
     def _stop_workflow(self, task: Task):
@@ -222,7 +227,7 @@ class CyclicController(Controller):
 
     def control_flow(self, abort_signal: Signal, fl_ctx: FLContext):
         try:
-            self.log_debug(fl_ctx, "Cyclic starting.")
+            self.log_info(fl_ctx, "Cyclic starting.")
 
             for self._current_round in range(self._start_round, self._end_round):
                 if self._is_done:
@@ -231,7 +236,7 @@ class CyclicController(Controller):
                 if abort_signal.triggered:
                     return
 
-                self.log_debug(fl_ctx, "Starting current round={}.".format(self._current_round))
+                self.log_info(fl_ctx, "Starting current round={}.".format(self._current_round))
                 fl_ctx.set_prop(AppConstants.CURRENT_ROUND, self._current_round, private=True, sticky=True)
 
                 # Task for one cyclic
@@ -239,7 +244,7 @@ class CyclicController(Controller):
                 if targets is None:
                     return
                 targets_names = [t.name for t in targets]
-                self.log_debug(fl_ctx, f"Relay on {targets_names}")
+                self.log_info(fl_ctx, f"Relay on {targets_names}")
 
                 shareable = self.shareable_generator.learnable_to_shareable(self._last_learnable, fl_ctx)
                 shareable.set_header(AppConstants.CURRENT_ROUND, self._current_round)
@@ -250,11 +255,12 @@ class CyclicController(Controller):
                     name=self.task_name,
                     data=shareable,
                     result_received_cb=self._process_result,
+                    timeout=300, #testing
                 )
 
                 self.relay_and_wait(
                     task=task,
-                    targets=targets,
+                    targets=targets_names,#targets,
                     task_assignment_timeout=self.task_assignment_timeout,
                     fl_ctx=fl_ctx,
                     dynamic_targets=False,
@@ -275,10 +281,10 @@ class CyclicController(Controller):
                     # Call the self._engine to persist the snapshot of all the FLComponents
                     self._engine.persist_components(fl_ctx, completed=False)
 
-                self.log_debug(fl_ctx, "Ending current round={}.".format(self._current_round))
+                self.log_info(fl_ctx, "Ending current round={}.".format(self._current_round))
                 gc.collect()
 
-            self.log_debug(fl_ctx, "Cyclic ended.")
+            self.log_info(fl_ctx, "Cyclic ended.")
         except Exception as e:
             error_msg = f"Cyclic control_flow exception: {secure_format_exception(e)}"
             self.log_error(fl_ctx, error_msg)
