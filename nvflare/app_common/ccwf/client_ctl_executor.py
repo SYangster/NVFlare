@@ -156,7 +156,7 @@ class ClientSideExecutor(Executor):#, TaskController):
 
         self.controller.initialize(fl_ctx)
         #self.controller.communicator.initialize_run(fl_ctx)
-        self.controller.start_controller(fl_ctx)
+        #self.controller.start_controller(fl_ctx)
 
         runner = fl_ctx.get_prop(FLContextKey.RUNNER)
         if not runner:
@@ -196,6 +196,7 @@ class ClientSideExecutor(Executor):#, TaskController):
 
     def handle_event(self, event_type: str, fl_ctx: FLContext):
         if event_type == EventType.START_RUN:
+        #if event_type == EventType.START_WORKFLOW:
             self.start_run(fl_ctx)
 
         elif event_type == EventType.BEFORE_PULL_TASK:
@@ -270,6 +271,9 @@ class ClientSideExecutor(Executor):#, TaskController):
         return f"{base_topic}.{self.workflow_id}"
 
     def execute(self, task_name: str, shareable: Shareable, fl_ctx: FLContext, abort_signal: Signal) -> Shareable:
+        #print(f"\n\t client ctrl executor {fl_ctx.get_identity_name()}\n")
+        print(f"\n\t CLIENT CTRL EXECUTOR EXECUTE() SEAN 3 {fl_ctx.get_all_public_props()} {fl_ctx.get_peer_context().get_all_public_props()}\n")
+
         if task_name == self.configure_task_name:
             self.config = shareable[Constant.CONFIG]
             self.controller.config = self.config #neww
@@ -301,9 +305,8 @@ class ClientSideExecutor(Executor):#, TaskController):
             initial_model = self.shareable_generator.learnable_to_shareable(learnable, fl_ctx) #todo what to do about initial model
             res = self.controller.control_flow(abort_signal, fl_ctx)
 
-
-
-            self._distribute_final_results(self.controller.persistor.load(fl_ctx), fl_ctx)#testingggg
+            if hasattr(self.controller, "persistor"):
+                self._distribute_final_results(self.controller.persistor.load(fl_ctx), fl_ctx)#testingggg
             
             self.update_status(action="finished_start_task", error=None, all_done=True)
             return make_reply(ReturnCode.OK)#return res

@@ -182,6 +182,10 @@ class ServerSideController(Controller):
             allow_none=False,
         )
 
+        import random
+        print(f"\n\t {self.participating_clients=}\n")
+        random.shuffle(self.participating_clients)
+        print(f"\n\t {self.participating_clients=}\n")
         self.starting_client = validate_candidate(
             var_name="starting_client",
             candidate=self.starting_client,
@@ -189,6 +193,7 @@ class ServerSideController(Controller):
             default_policy=self.starting_client_policy,
             allow_none=True,
         )
+        print(f"\n\t {self.starting_client=}\n")
 
         self.result_clients = validate_candidates(
             var_name="result_clients",
@@ -440,6 +445,10 @@ class ServerSideController(Controller):
         peer_ctx = fl_ctx.get_peer_context()
         assert isinstance(peer_ctx, FLContext)
         client_name = peer_ctx.get_identity_name()
+        if client_name not in self.client_statuses:
+            if self.client_statuses: #testinggg
+                self.log_error(fl_ctx, f"received result from unknown client {client_name}!")
+            return
 
         # see whether status is available
         reports = peer_ctx.get_prop(Constant.STATUS_REPORTS)

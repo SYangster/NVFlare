@@ -286,6 +286,7 @@ class CyclicController(Controller):
 
             self.log_info(fl_ctx, "Cyclic ended.")
         except Exception as e:
+            raise(e)
             error_msg = f"Cyclic control_flow exception: {secure_format_exception(e)}"
             self.log_error(fl_ctx, error_msg)
             self.system_panic(error_msg, fl_ctx)

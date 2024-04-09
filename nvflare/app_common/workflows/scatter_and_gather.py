@@ -208,6 +208,8 @@ class ScatterAndGather(Controller):
     def control_flow(self, abort_signal: Signal, fl_ctx: FLContext) -> None:
         try:
 
+            #print(f"\n\t SCATTER AND GATHER CONTROL_FLOW SEAN 1 {fl_ctx.get_all_public_props()} {fl_ctx.get_peer_context().get_all_public_props()}\n")
+
             self.log_info(fl_ctx, "Beginning ScatterAndGather training phase.")
             self._phase = AppConstants.PHASE_TRAIN
 
@@ -250,7 +252,7 @@ class ScatterAndGather(Controller):
                     result_received_cb=self._process_train_result,
                 )
 
-                self.broadcast_and_wait(
+                self.broadcast_and_wait( #this isn't using comm client????
                     task=train_task,
                     min_responses=self._min_clients,
                     wait_time_after_min_received=self._wait_time_after_min_received,
@@ -372,6 +374,10 @@ class ScatterAndGather(Controller):
         fl_ctx.set_prop(AppConstants.CURRENT_ROUND, self._current_round, private=True, sticky=True)
         fl_ctx.set_prop(AppConstants.TRAINING_RESULT, result, private=True, sticky=False)
         self.fire_event(AppEventType.BEFORE_CONTRIBUTION_ACCEPT, fl_ctx)
+
+        from nvflare.apis.fl_constant import FLContextKey
+        print(f"\n\t SITE NAME {fl_ctx.get_prop(FLContextKey.SITE_NAME)}\n")
+        #shareable.get_peer_prop(key=ReservedKey.IDENTITY_NAME, default="?")
 
         accepted = self.aggregator.accept(result, fl_ctx)
         accepted_msg = "ACCEPTED" if accepted else "REJECTED"

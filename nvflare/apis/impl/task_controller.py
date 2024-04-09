@@ -126,7 +126,7 @@ class TaskController(FLComponent, ControllerSpec):
             raise ValueError(f"The task timeout must > 0. But got {task.timeout}")
 
         request.set_header(ReservedKey.TASK_NAME, task.name)
-        replies = engine.send_aux_request(
+        replies = engine.send_aux_request( #PEER CTX IS SET HEREEEEEE!!!!!
             targets=targets,
             topic=ReservedTopic.DO_TASK,
             request=request,

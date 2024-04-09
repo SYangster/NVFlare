@@ -299,7 +299,9 @@ class ClientRunner(TBI):
             add_job_audit_event(fl_ctx=fl_ctx, msg=f"invoked executor {executor_name}")
 
             try:
+                print(f"\n\t _do_process_task {fl_ctx.get_all_public_props()} {fl_ctx.get_peer_context().get_all_public_props()}\n")
                 reply = executor.execute(task.name, task.data, fl_ctx, abort_signal)
+                print(f"\n\t after _do_process_task {reply.get_peer_props()}\n")
             finally:
                 if abort_signal.triggered:
                     return self._reply_and_audit(
@@ -415,6 +417,7 @@ class ClientRunner(TBI):
 
         while not self.run_abort_signal.triggered:
             with self.engine.new_context() as fl_ctx:
+                print(f"\n\t HEREEEEE _try_run client runner {fl_ctx.get_peer_context()}")
                 task_fetch_interval, _ = self.fetch_and_run_one_task(fl_ctx)
             time.sleep(task_fetch_interval)
 
@@ -703,6 +706,17 @@ class ClientRunner(TBI):
 
     def _handle_do_task(self, topic: str, request: Shareable, fl_ctx: FLContext) -> Shareable:
         self.log_info(fl_ctx, "received aux request to do task")
+        print(f"\n\t _handle_do_task {fl_ctx.get_all_public_props()} {fl_ctx.get_peer_context().get_all_public_props()}\n")
+
+        # peer_context = request.get_header(FLContextKey.PEER_CONTEXT)
+        # print(f"\n\t _handle_do_task PEER CONTEXT")
+        # if peer_context:
+        #     print(f"\n\t PEER CONTEXT {peer_context.get_all_public_props()}")
+        #     fl_ctx.set_peer_context(peer_context)
+        #request.set_peer_props(fl_ctx.get_all_public_props())
+
+        #fl_ctx.set_peer_context(fl_ctx)
+
         task_name = request.get_header(ReservedHeaderKey.TASK_NAME)
         task_id = request.get_header(ReservedHeaderKey.TASK_ID)
         task = TaskAssignment(name=task_name, task_id=task_id, data=request)

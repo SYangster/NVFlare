@@ -299,6 +299,7 @@ class SwarmClientController(ClientSideController):
         )
 
     def execute(self, task_name: str, shareable: Shareable, fl_ctx: FLContext, abort_signal: Signal) -> Shareable:
+        print(f"\n\t SWARM CLIENT CTL EXECUTE() SEAN 2 {fl_ctx.get_all_public_props()} {fl_ctx.get_peer_context().get_all_public_props()}\n")
         if task_name == self.report_learn_result_task_name:
             return self._process_learn_result(shareable, fl_ctx, abort_signal)
         return super().execute(task_name, shareable, fl_ctx, abort_signal)
@@ -542,6 +543,9 @@ class SwarmClientController(ClientSideController):
             return make_reply(ReturnCode.EXECUTION_EXCEPTION)
 
     def do_learn_task(self, name: str, task_data: Shareable, fl_ctx: FLContext, abort_signal: Signal):
+        print(f"\n\t do_learn_task!!!!!!! {fl_ctx.get_all_public_props()} {fl_ctx.get_peer_context().get_all_public_props()}\n")
+
+
         # set status report of starting task
         current_round = task_data.get_header(AppConstants.CURRENT_ROUND)
         self.update_status(last_round=current_round, action="start_learn_task")

@@ -237,7 +237,7 @@ class CrossSiteModelEval(Controller):
             self.system_panic(error_msg, fl_ctx)
 
     def stop_controller(self, fl_ctx: FLContext):
-        self.cancel_all_tasks(fl_ctx=fl_ctx)
+        #self.cancel_all_tasks(fl_ctx=fl_ctx) testinggggggg
 
         if self._cleanup_models:
             self.log_info(fl_ctx, "Removing local models kept for validation.")
@@ -278,10 +278,14 @@ class CrossSiteModelEval(Controller):
             )
             return
 
+        #print(f"\n\t {model_dxo=}\n")
+
         model_shareable = model_dxo.to_shareable()
         model_shareable.set_header(AppConstants.MODEL_OWNER, model_name)
         model_shareable.add_cookie(AppConstants.MODEL_OWNER, model_name)
         client_task.task.data = model_shareable
+
+        #print(f"\n\t {model_shareable=}\n")
 
         fl_ctx.set_prop(AppConstants.DATA_CLIENT, client_task.client, private=True, sticky=False)
         fl_ctx.set_prop(AppConstants.MODEL_OWNER, model_name, private=True, sticky=False)

@@ -146,7 +146,7 @@ class Controller(FLComponent, ControllerSpec, ABC):
     def cancel_all_tasks(self, completion_status=TaskCompletionStatus.CANCELLED, fl_ctx: Optional[FLContext] = None):
         self.communicator.cancel_all_tasks(completion_status, fl_ctx)
 
-    def get_client_disconnect_time(self, client_name):
+    def get_client_disconnect_time(self, client_name, fl_ctx: Optional[FLContext] = None):
         """Get the time when the client is deemed disconnected.
 
         Args:
@@ -157,4 +157,9 @@ class Controller(FLComponent, ControllerSpec, ABC):
         """
         if not self.communicator:
             return None
-        return self.communicator.get_client_disconnect_time(client_name)
+
+        try:
+            return self.communicator.get_client_disconnect_time(client_name)
+        except Exception as e:
+            self.log_warning(fl_ctx, f"get_client_disconnect_time() is not supported by {self.communicator}: {e}")
+            return None

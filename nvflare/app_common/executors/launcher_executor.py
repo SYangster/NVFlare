@@ -152,6 +152,11 @@ class LauncherExecutor(TaskExchanger):
         if not self._initialize_external_execution(task_name, shareable, fl_ctx, abort_signal):
             return make_reply(ReturnCode.EXECUTION_EXCEPTION)
 
+        #print(f"\n\t FROM NVFLARE CONVERTER {task_name=} {shareable=}, {fl_ctx.get_all_public_props()}\n")
+        # from nvflare.apis.shareable import ReservedHeaderKey
+        # if not shareable.get_header(ReservedHeaderKey.CONTENT_TYPE):
+        #     shareable.set_header(ReservedHeaderKey.CONTENT_TYPE, "DXO")
+
         if self._from_nvflare_converter is not None:
             shareable = self._from_nvflare_converter.process(task_name, shareable, fl_ctx)
 

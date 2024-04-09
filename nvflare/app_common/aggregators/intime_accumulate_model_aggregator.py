@@ -187,7 +187,9 @@ class InTimeAccumulateWeightedAggregator(Aggregator):
             )
             return False
 
-        contributor_name = shareable.get_peer_prop(key=ReservedKey.IDENTITY_NAME, default="?")
+        #contributor_name = shareable.get_peer_prop(key=ReservedKey.IDENTITY_NAME, default="?")
+        contributor_name = fl_ctx.get_peer_context().get_identity_name()
+        print(f"\n\t INTIME AGG {fl_ctx.get_identity_name()} {fl_ctx.get_peer_context().get_identity_name()}, {shareable.get_peer_props()} \n")
         contribution_round = shareable.get_cookie(AppConstants.CONTRIBUTION_ROUND)
 
         rc = shareable.get_return_code()

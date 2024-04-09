@@ -78,6 +78,8 @@ class DXOAggregator(FLComponent):
             The boolean to indicate if DXO is accepted.
         """
 
+        print(f"\n\t {dxo=}, {contributor_name=}, {contribution_round=} \n")
+
         if not isinstance(dxo, DXO):
             self.log_error(fl_ctx, f"Expected DXO but got {type(dxo)}")
             return False
@@ -117,6 +119,7 @@ class DXOAggregator(FLComponent):
             self.log_error(fl_ctx, "no data to aggregate")
             return False
 
+        print(f"\n\t in Accept, get_history {self.aggregation_helper.get_history()} \n")
         for item in self.aggregation_helper.get_history():
             if contributor_name == item["contributor_name"]:
                 prev_round = item["round"]

@@ -128,7 +128,7 @@ class ClientRunManager(ClientEngineExecutorSpec):
 
     def send_task_result(self, result: Shareable, fl_ctx: FLContext, timeout=None) -> bool:
 
-        print(f"\n\t client_run_manager send_task_result {result=}")
+        #print(f"\n\t client_run_manager send_task_result {result=}")
 
         push_result = self.client.push_results(result, fl_ctx, timeout)  # push task execution results
         if push_result == CellReturnCode.OK:

@@ -97,6 +97,7 @@ class ClientTaskWorker(FLComponent):
                 else:
                     run_task_tries = 0
                     while True:
+                        #print(f"\n\t do_one_task HEREEE")
                         interval, task_processed = client_runner.fetch_and_run_one_task(fl_ctx)
                         if task_processed:
                             self.logger.info(

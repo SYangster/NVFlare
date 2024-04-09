@@ -92,6 +92,8 @@ class IntimeModelSelector(Widget):
         if dxo.data is None:
             self.log_debug(fl_ctx, "no data to filter")
             return False
+        
+        print("\n\t HEREEEEEE1\n")
 
         contribution_round = shareable.get_cookie(AppConstants.CONTRIBUTION_ROUND)
         client_name = peer_ctx.get_identity_name(default="?")
@@ -127,6 +129,8 @@ class IntimeModelSelector(Widget):
 
         if self.negate_key_metric:
             validation_metric = -1.0 * validation_metric
+
+        print("\n\t HEREEEEEE2\n")
 
         self.log_info(fl_ctx, f"validation metric {validation_metric} from client {client_name}")
 

@@ -211,7 +211,9 @@ class AuxRunner(FLComponent):
 
         """
         request.set_header(ReservedHeaderKey.TOPIC, topic)
+        #request.set_peer_props(fl_ctx.get_all_public_props())
         request.set_peer_props(fl_ctx.get_all_public_props())
+        print(f"\n\t send to cell {fl_ctx.get_all_public_props()}\n")
 
         job_id = fl_ctx.get_job_id()
         start = time.time()

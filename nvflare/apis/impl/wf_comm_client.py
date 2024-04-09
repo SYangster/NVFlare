@@ -56,8 +56,12 @@ class WFCommClient(FLComponent, WFCommSpec):
         wait_time_after_min_received: int = 0,
         abort_signal: Signal = None,
     ):
+        print(f"\n\t SEAN 1 WF COMM CLIENT {fl_ctx.get_all_public_props()} {fl_ctx.get_peer_context().get_all_public_props()}\n")
+
+        # SEAN 1 {'__run_num__': 'simulate_job', '__identity_name__': 'site-2', '__client_name__': 'site-2', 'fl_token': '0d335ce5-f270-471e-88d4-490564ce2dcc', '__current_job_id__': 'simulate_job'} {'__run_num__': 'simulate_job', '__identity_name__': 'simulator_server'}
+
         engine = fl_ctx.get_engine()
-        request = task.data
+        # request = task.data ORIG
         # apply task filters
         self.log_debug(fl_ctx, "firing event EventType.BEFORE_TASK_DATA_FILTER")
         fl_ctx.set_prop(FLContextKey.TASK_DATA, task.data, sticky=False, private=True)
@@ -66,7 +70,8 @@ class WFCommClient(FLComponent, WFCommSpec):
         # # first apply privacy-defined filters
         try:
             filter_name = Scope.TASK_DATA_FILTERS_NAME
-            task.data = apply_filters(filter_name, request, fl_ctx, self.task_data_filters, task.name, FilterKey.OUT)
+            #task.data = apply_filters(filter_name, request, fl_ctx, self.task_data_filters, task.name, FilterKey.OUT)
+            task.data = apply_filters(filter_name, task.data, fl_ctx, self.task_data_filters, task.name, FilterKey.OUT)
         except Exception as e:
             self.log_exception(
                 fl_ctx,
@@ -102,13 +107,21 @@ class WFCommClient(FLComponent, WFCommSpec):
             task.client_tasks.append(client_task)
             task.last_client_task_map[client_task.id] = client_task
 
-            # task_cb_error = self._call_task_cb(task.before_task_sent_cb, client, task, fl_ctx)
-            # if task_cb_error:
-            #     return self._make_error_reply(ReturnCode.ERROR, targets)
+            #print(f"\n\t task.data before before_task_sent_cb {task.data.keys()} \n")
 
+            task_cb_error = self._call_task_cb(task.before_task_sent_cb, client, task, fl_ctx)
+            if task_cb_error:
+                return self._make_error_reply(ReturnCode.ERROR, targets)
+
+            #print(f"\n\t task.data after before_task_sent_cb {task.data.keys()} \n")
+
+        print(f"\n\t {task.timeout=} \n")
         if task.timeout <= 0:
-            task.timeout = 10 #TESTING DEFAULT
+            task.timeout = 300#10 #TESTING DEFAULT
             #raise ValueError(f"The task timeout must > 0. But got {task.timeout}")
+
+        request = task.data
+        #print(f"\n\t request before send_aux_request {request=} \n")
 
         request.set_header(ReservedKey.TASK_NAME, task.name)
         replies = engine.send_aux_request(
@@ -120,10 +133,29 @@ class WFCommClient(FLComponent, WFCommSpec):
             secure=task.secure,
         )
 
+        for client_task in task.client_tasks:
+            task_cb_error = self._call_task_cb(task.after_task_sent_cb, client_task.client, client_task.task, fl_ctx)
+            if task_cb_error:
+                return self._make_error_reply(ReturnCode.ERROR, targets)
+
+        #HEREEEEE REPLIES DOESN'T HAVE THE RIGHT PEER CONTEXT!!!
+
         self.log_debug(fl_ctx, "firing event EventType.BEFORE_TASK_RESULT_FILTER")
         self.fire_event(EventType.BEFORE_TASK_RESULT_FILTER, fl_ctx)
 
         for target, reply in replies.items():
+
+            #reply.set_peer_props(fl_ctx.get_peer_context().get_all_public_props())
+
+            print(f"\n\t WF COMM CLIENT {reply.get_header(FLContextKey.PEER_CONTEXT).get_all_public_props()} \n")
+            peer_ctx = reply.get_header(FLContextKey.PEER_CONTEXT)
+
+            print(f"\n\t WF COMM CLIENT peer {reply.get_peer_props()} \n")
+
+            peer_ctx.set_prop(FLContextKey.SHAREABLE, reply, private=True) #testing
+
+            fl_ctx.set_peer_context(peer_ctx)
+
             # get the client task for the target
             for client_task in task.client_tasks:
                 if client_task.client.name == target:
@@ -148,6 +180,8 @@ class WFCommClient(FLComponent, WFCommSpec):
                         client_task.result = reply
 
                         client: Client = self._get_client(target, engine)
+                        #fl_ctx.set_peer_context(fl_ctx) #TESTING
+                        
                         task_cb_error = self._call_task_cb(task.result_received_cb, client, task, fl_ctx)
                         if task_cb_error:
                             client_task.result = make_reply(ReturnCode.ERROR)
@@ -169,7 +203,9 @@ class WFCommClient(FLComponent, WFCommSpec):
                 task.exception = e
                 return self._make_error_reply(ReturnCode.ERROR, targets)
             
-        print(f"\n\t wf_comm_client 1 {task.client_tasks=}")
+        print(f"\n\t wf_comm_client 1 {task.client_tasks=}\n")
+        #print(f"\n\t 1st {task.client_tasks[0].fl_ctx.get_all_public_props()} {task.client_tasks[0].fl_ctx.get_peer_context().get_all_public_props()}\n")
+        #print(f"\n\t 2nd {task.client_tasks[1].fl_ctx.get_all_public_props()} {task.client_tasks[1].fl_ctx.get_peer_context().get_all_public_props()}\n")
 
         replies = {}
         for client_task in task.client_tasks:
@@ -309,3 +345,11 @@ class WFCommClient(FLComponent, WFCommSpec):
         _, invalid_names = engine.validate_targets(target_names)
         if invalid_names:
             raise ValueError(f"invalid target(s): {invalid_names}")
+        
+    def get_num_standing_tasks(self) -> int: #testinggg
+        """Get the number of tasks that are currently standing.
+
+        Returns:
+            int: length of the list of standing tasks
+        """
+        return None

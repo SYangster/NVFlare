@@ -61,6 +61,7 @@ class WeightedAggregationHelper(object):
                 else:
                     self.total[k] = current_total + weighted_value
                     self.counts[k] = self.counts[k] + weight
+            print(f"\n\t AGGR HELPER HISTORY APPEND {contributor_name=} {contribution_round=} \n")
             self.history.append(
                 {
                     "contributor_name": contributor_name,

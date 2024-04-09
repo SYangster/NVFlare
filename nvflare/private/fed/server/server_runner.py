@@ -453,7 +453,7 @@ class ServerRunner(TBI):
 
         result.set_header(ReservedHeaderKey.TASK_NAME, task_name)
         result.set_header(ReservedHeaderKey.TASK_ID, task_id)
-        result.set_peer_props(peer_ctx.get_all_public_props())
+        result.set_peer_props(peer_ctx.get_all_public_props()) ###############
 
         with self.wf_lock:
             try:
