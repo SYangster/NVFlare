@@ -1,0 +1,319 @@
+---
+const highlights = [
+{
+    title: "Intro to the FL Simulator",
+    tags: ["beg.", "tools"],
+    description: "Use the NVIDIA FLARE Simulator to run a local simulation with multi-process settings within a single computer, offering quick response and debugging.",
+    link: "https://github.com/NVIDIA/NVFlare/tree/main/examples/tutorials/flare_simulator.ipynb",
+    colab_link: "https://colab.research.google.com/github/NVIDIA/NVFlare/blob/main/examples/tutorials/flare_simulator.ipynb"
+  },
+  {
+    title: "Containerized Deployment with Docker",
+    tags: ["beg.", "deployment"],
+    description:
+      "Run NVIDIA FLARE in a Docker container.",
+    link: "https://nvflare.readthedocs.io/en/main/getting_started.html#containerized-deployment-with-docker",
+  },
+  {
+    title: "POC Mode",
+    tags: ["beg.", "tools"],
+    description: "Proof-of-concept mode to simulate real-world deployment on a local host with different processes represent server, clients, and an admin console.",
+    link: "https://github.com/NVIDIA/NVFlare/tree/main/examples/tutorials/setup_poc.ipynb"
+  },
+  {
+    title: "FLARE API",
+    tags: ["beg.", "tools"],
+    description: "Manage system and jobs programmatically with the python FLARE API.",
+    link: "https://github.com/NVIDIA/NVFlare/tree/main/examples/tutorials/flare_api.ipynb",
+    colab_link: "https://colab.research.google.com/github/NVIDIA/NVFlare/blob/main/examples/tutorials/flare_api.ipynb"
+  },
+]
+
+---
+
+<div class="bg-white py-20 sm:py-24">
+  <div class="mx-auto max-w-[1500px] px-6 lg:px-8">
+    <div class="mx-auto lg:mx-0 text-center">
+      <h2 class="text-4xl lg:text-5xl font-bold lg:tracking-tight text-gray-900">
+        Tutorials
+      </h2>
+      <p class="text-lg mt-4 text-slate-600 w-3/4 m-auto">
+        These progressive tutorial series cover various aspects of NVIDIA FLARE from core concepts and basic tools to advanced algorithms and deployments.
+        For a comprehensive list of all tutorials, view the tutorial catalog below.
+      </p>
+    </div>
+
+    
+
+    <div class="mt-20 max-w-[1500px] mx-auto py-4 text-left flex flex-col md:flex-row">
+
+      <ol class="relative text-gray-500 border-s border-gray-200 dark:border-gray-700 dark:text-gray-400">   
+        <li class="mb-10">            
+          <!-- <span class="absolute flex items-center justify-center w-8 h-8 bg-green-200 rounded-full -start-4 ring-4 ring-white dark:ring-gray-900 dark:bg-green-900">
+              <svg class="w-3.5 h-3.5 text-green-500 dark:text-green-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5"/>
+              </svg>
+          </span> -->
+          <span class="flex items-center space-x-4">
+            <button class="shadow-none border-none" data-glide-dir="<">
+              <!-- <svg class="stroke-gray-400 hover:stroke-nvidia w-8 h-8 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="m15 19-7-7 7-7"/>
+              </svg> -->
+              <svg class="stroke-gray-400 w-8 h-8 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 16.881V7.119a1 1 0 0 0-1.636-.772l-5.927 4.881a1 1 0 0 0 0 1.544l5.927 4.88a1 1 0 0 0 1.636-.77Z"/>
+              </svg>
+              
+            </button>
+            <p class="text-3xl leading-tight text-gray-700">100 Series</p>
+            <button class="shadow-none border-none" data-glide-dir=">">
+              <svg class="stroke-gray-400 w-8 h-8 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16.881V7.119a1 1 0 0 1 1.636-.772l5.927 4.881a1 1 0 0 1 0 1.544l-5.927 4.88A1 1 0 0 1 8 16.882Z"/>
+              </svg>              
+            </button>
+          </span>
+          <!-- <p class="text-sm">Learn how to run NVIDIA FLARE</p> -->
+      </li>               
+        <li class="mb-10 ms-6">            
+            <span class="absolute flex items-center justify-center w-8 h-8 bg-green-200 rounded-full -start-4 ring-4 ring-white dark:ring-gray-900 dark:bg-green-900">
+                <svg class="w-3.5 h-3.5 text-green-500 dark:text-green-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5"/>
+                </svg>
+            </span>
+            <h3 class="font-medium leading-tight">101: Start Federated Learning</h3>
+            <p class="text-sm">Learn how to run NVIDIA FLARE</p>
+        </li>
+        <li class="mb-10 ms-6">
+            <span class="absolute flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full -start-4 ring-4 ring-white dark:ring-gray-900 dark:bg-gray-700">
+                <svg class="w-3.5 h-3.5 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 16">
+                    <path d="M18 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2ZM6.5 3a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3.014 13.021l.157-.625A3.427 3.427 0 0 1 6.5 9.571a3.426 3.426 0 0 1 3.322 2.805l.159.622-6.967.023ZM16 12h-3a1 1 0 0 1 0-2h3a1 1 0 0 1 0 2Zm0-3h-3a1 1 0 1 1 0-2h3a1 1 0 1 1 0 2Zm0-3h-3a1 1 0 1 1 0-2h3a1 1 0 1 1 0 2Z"/>
+                </svg>
+            </span>
+            <h3 class="font-medium leading-tight">102: Algorithms - Image Data</h3>
+            <p class="text-sm">Federated image data exploration</p>
+        </li>
+        <li class="mb-10 ms-6">
+            <span class="absolute flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full -start-4 ring-4 ring-white dark:ring-gray-900 dark:bg-gray-700">
+                <svg class="w-3.5 h-3.5 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
+                    <path d="M16 1h-3.278A1.992 1.992 0 0 0 11 0H7a1.993 1.993 0 0 0-1.722 1H2a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2Zm-3 14H5a1 1 0 0 1 0-2h8a1 1 0 0 1 0 2Zm0-4H5a1 1 0 0 1 0-2h8a1 1 0 1 1 0 2Zm0-5H5a1 1 0 0 1 0-2h2V2h4v2h2a1 1 0 1 1 0 2Z"/>
+                </svg>
+            </span>
+            <h3 class="font-medium leading-tight">103: Algorithms - Tabular Data</h3>
+            <p class="text-sm">Federated tabular data exploration</p>
+        </li>
+        <li class="mb-10 ms-6">
+            <span class="absolute flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full -start-4 ring-4 ring-white dark:ring-gray-900 dark:bg-gray-700">
+                <svg class="w-3.5 h-3.5 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
+                    <path d="M16 1h-3.278A1.992 1.992 0 0 0 11 0H7a1.993 1.993 0 0 0-1.722 1H2a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2ZM7 2h4v3H7V2Zm5.7 8.289-3.975 3.857a1 1 0 0 1-1.393 0L5.3 12.182a1.002 1.002 0 1 1 1.4-1.436l1.328 1.289 3.28-3.181a1 1 0 1 1 1.392 1.435Z"/>
+                </svg>
+            </span>
+            <h3 class="font-medium leading-tight">104: Tools and CLIs</h3>
+            <p class="text-sm">Tools and CLIs for different modes</p>
+        </li>
+        <li class="ms-6">
+          <span class="absolute flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full -start-4 ring-4 ring-white dark:ring-gray-900 dark:bg-gray-700">
+              <svg class="w-3.5 h-3.5 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
+                  <path d="M16 1h-3.278A1.992 1.992 0 0 0 11 0H7a1.993 1.993 0 0 0-1.722 1H2a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2ZM7 2h4v3H7V2Zm5.7 8.289-3.975 3.857a1 1 0 0 1-1.393 0L5.3 12.182a1.002 1.002 0 1 1 1.4-1.436l1.328 1.289 3.28-3.181a1 1 0 1 1 1.392 1.435Z"/>
+              </svg>
+          </span>
+          <h3 class="font-medium leading-tight">105: Python APIs</h3>
+          <p class="text-sm">ModelController, Client, and Job APIs</p>
+        </li>
+      </ol>
+    
+
+
+      <!-- Highlights Carousel -->
+      <div id="series-glide" class="w-[1100px] glide ps-12 pr-12 px-2 pb-8 rounded-3xl mt-12">
+        <div class="glide__track" data-glide-el="track">
+          <ul id="highlights-slides" class="glide__slides">
+            {
+              highlights.map((tutorial) => (
+                <li class="slider__frame glide__slide w- mb-4 p-4 transition-shadow ease-in-out" role="presentation">
+                  <div class="flex flex-col gap-1 divide-gray-200 rounded-lg bg-white shadow-md h-80">
+                    <div>
+                      <h3 class="font-semibold text-md px-4 pt-2 text-lg">
+                        {tutorial.title}
+                      </h3>
+                      <div class="px-4 gap-x-2 flex-wrap items-center">
+                        {tutorial.tags.map((tag) => (
+                          <div class="inline-flex rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                            {tag}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div class="flex-grow overflow-y-auto px-4">
+                      <p class="text-slate-500 mt-2 leading-relaxed">
+                        {tutorial.description}
+                      </p>
+                    </div>
+                    <div class="h-14 flex-shrink-0 flex justify-center items-center border-t border-gray-200">
+                      <a href={tutorial.link} class="rounded-bl-lg border border-transparent py-2 px-4 text-sm font-semibold text-gray-900">
+                        Go to Tutorial
+                      </a>
+                    </div>
+                  </div>
+                </li>
+              ))}
+          </ul>
+        </div>
+        <div class="glide__arrows" data-glide-el="controls">
+          <!-- Left Carousel Arrow -->
+          <button class="glide__arrow glide__arrow--left left-0 shadow-none border-none" data-glide-dir="<">
+            <svg class="stroke-gray-400 hover:stroke-nvidia w-12 h-12 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="m15 19-7-7 7-7"/>
+            </svg>
+          </button>
+          <!-- Carousel Bullets -->
+          <div id="highlights-bullets" class="glide__bullets" data-glide-el="controls[nav]">
+            {
+              highlights.map((item, index) => (
+                <button class="glide__bullet h-3 w-3 bg-gray-200 ring-1 ring-gray-200 shadow-none" data-glide-dir={"="+index}></button>
+              ))
+            }
+          </div>
+          <!-- Right Carousel Arrow -->
+          <button class="glide__arrow glide__arrow--right right-0 shadow-none border-none" data-glide-dir=">">
+            <div class="h-14 w-14 flex justify-center items-center">
+              <svg class="stroke-gray-400 hover:stroke-nvidia w-12 h-12 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="m9 5 7 7-7 7"/>
+              </svg>
+            </div>
+          </button>
+        </div>
+      </div>
+    
+    </div>
+
+
+    <!-- <ol class="relative text-gray-500 border-s border-gray-200 dark:border-gray-700 dark:text-gray-400">                  
+      <li class="mb-10 ms-6">            
+          <span class="absolute flex items-center justify-center w-8 h-8 bg-green-200 rounded-full -start-4 ring-4 ring-white dark:ring-gray-900 dark:bg-green-900">
+              <svg class="w-3.5 h-3.5 text-green-500 dark:text-green-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5"/>
+              </svg>
+          </span>
+          <h3 class="font-medium leading-tight">101: Start Federated Learning</h3>
+          <p class="text-sm">Step details here</p>
+      </li>
+      <li class="mb-10 ms-6">
+          <span class="absolute flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full -start-4 ring-4 ring-white dark:ring-gray-900 dark:bg-gray-700">
+              <svg class="w-3.5 h-3.5 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 16">
+                  <path d="M18 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2ZM6.5 3a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3.014 13.021l.157-.625A3.427 3.427 0 0 1 6.5 9.571a3.426 3.426 0 0 1 3.322 2.805l.159.622-6.967.023ZM16 12h-3a1 1 0 0 1 0-2h3a1 1 0 0 1 0 2Zm0-3h-3a1 1 0 1 1 0-2h3a1 1 0 1 1 0 2Zm0-3h-3a1 1 0 1 1 0-2h3a1 1 0 1 1 0 2Z"/>
+              </svg>
+          </span>
+          <h3 class="font-medium leading-tight">102: Algorithms - Image Data</h3>
+          <p class="text-sm">Step details here</p>
+      </li>
+      <li class="mb-10 ms-6">
+          <span class="absolute flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full -start-4 ring-4 ring-white dark:ring-gray-900 dark:bg-gray-700">
+              <svg class="w-3.5 h-3.5 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
+                  <path d="M16 1h-3.278A1.992 1.992 0 0 0 11 0H7a1.993 1.993 0 0 0-1.722 1H2a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2Zm-3 14H5a1 1 0 0 1 0-2h8a1 1 0 0 1 0 2Zm0-4H5a1 1 0 0 1 0-2h8a1 1 0 1 1 0 2Zm0-5H5a1 1 0 0 1 0-2h2V2h4v2h2a1 1 0 1 1 0 2Z"/>
+              </svg>
+          </span>
+          <h3 class="font-medium leading-tight">103: Algorithms - Tabular Data</h3>
+          <p class="text-sm">Step details here</p>
+      </li>
+      <li class="mb-10 ms-6">
+          <span class="absolute flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full -start-4 ring-4 ring-white dark:ring-gray-900 dark:bg-gray-700">
+              <svg class="w-3.5 h-3.5 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
+                  <path d="M16 1h-3.278A1.992 1.992 0 0 0 11 0H7a1.993 1.993 0 0 0-1.722 1H2a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2ZM7 2h4v3H7V2Zm5.7 8.289-3.975 3.857a1 1 0 0 1-1.393 0L5.3 12.182a1.002 1.002 0 1 1 1.4-1.436l1.328 1.289 3.28-3.181a1 1 0 1 1 1.392 1.435Z"/>
+              </svg>
+          </span>
+          <h3 class="font-medium leading-tight">104: FLARE CLI</h3>
+          <p class="text-sm">Step details here</p>
+      </li>
+      <li class="ms-6">
+        <span class="absolute flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full -start-4 ring-4 ring-white dark:ring-gray-900 dark:bg-gray-700">
+            <svg class="w-3.5 h-3.5 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
+                <path d="M16 1h-3.278A1.992 1.992 0 0 0 11 0H7a1.993 1.993 0 0 0-1.722 1H2a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2ZM7 2h4v3H7V2Zm5.7 8.289-3.975 3.857a1 1 0 0 1-1.393 0L5.3 12.182a1.002 1.002 0 1 1 1.4-1.436l1.328 1.289 3.28-3.181a1 1 0 1 1 1.392 1.435Z"/>
+            </svg>
+        </span>
+        <h3 class="font-medium leading-tight">105: Python APIs</h3>
+        <p class="text-sm">Step details here</p>
+    </li>
+  </ol> -->
+
+    <!-- {
+      highlights.map((tutorial) => (
+        <li class="slider__frame glide__slide w- mb-4 p-4 transition-shadow ease-in-out" role="presentation">
+          <div class="flex flex-col gap-1 divide-gray-200 rounded-lg bg-white shadow-md h-80">
+            <div>
+              <h3 class="font-semibold text-md px-4 pt-2 text-lg">
+                {tutorial.title}
+              </h3>
+              <div class="px-4 gap-x-2 flex-wrap items-center">
+                {tutorial.tags.map((tag) => (
+                  <div class="inline-flex rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                    {tag}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div class="flex-grow overflow-y-auto px-4">
+              <p class="text-slate-500 mt-2 leading-relaxed">
+                {tutorial.description}
+              </p>
+            </div>
+            <div class="h-14 flex-shrink-0 flex justify-center items-center border-t border-gray-200">
+              <a href={tutorial.link} class="rounded-bl-lg border border-transparent py-2 px-4 text-sm font-semibold text-gray-900">
+                Go to Tutorial
+              </a>
+            </div>
+          </div>
+        </li>
+      ))} -->
+
+    <!-- Tutorial Catalog Button -->
+    <div class="mt-32 text-center">
+      <p class="text-lg mt-4 mb-8 text-slate-600 w-3/4 m-auto">
+        To dive deeper into what NVIDIA FLARE has to offer, explore our full catalog of various tutorials and examples showcasing everything from the core features to advanced applications.
+      </p>
+      <a
+        href="/NVFlare/catalog"
+        class="rounded-md bg-nvidia px-3.5 py-2.5 text-mg font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-nvidia"
+        >Tutorial Catalog -></a
+      >
+    </div>
+  </div>
+</div>
+
+<script src="@glidejs/glide/dist/glide.min.js"></script>
+
+<script>
+  import Glide from '@glidejs/glide';
+
+  const config = {
+    type: 'slider',
+    animationDuration: 200,
+    perView: 3,
+    gap: 32,
+    dragThreshold: false,
+    breakpoints: {
+      1280: {
+        perView: 2,
+      },
+      1024: {
+        perView: 1,
+      },
+    },
+  };
+  var glide = new Glide(document.getElementById('series-glide'), config).mount();
+
+  // glide.on('move.after', function(event) {
+  //   var bullets = document.getElementById('highlights-bullets');
+  //   for (const bullet of bullets!.children) {
+  //     if (bullet.classList.contains('glide__bullet--active')) {
+  //       bullet.classList.replace("bg-gray-200", "bg-white");
+  //     } else {
+  //       bullet.classList.replace("bg-white", "bg-gray-200");
+  //     }
+  //   };
+  // });
+
+
+</script>
+
+<script define:vars={{}} is:inline>
+
+</script>

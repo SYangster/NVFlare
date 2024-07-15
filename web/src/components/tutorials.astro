@@ -1,4 +1,6 @@
 ---
+import GoogleColab from '../images/google_colab.svg.png'
+
 const highlights = [
   {
     title: "LLM Tuning via HuggingFace SFT Trainer",
@@ -39,7 +41,8 @@ const tutorials = [
     title: "Intro to the FL Simulator",
     tags: ["beg.", "tools"],
     description: "Use the NVIDIA FLARE Simulator to run a local simulation with multi-process settings within a single computer, offering quick response and debugging.",
-    link: "https://github.com/NVIDIA/NVFlare/tree/main/examples/tutorials/flare_simulator.ipynb"
+    link: "https://github.com/NVIDIA/NVFlare/tree/main/examples/tutorials/flare_simulator.ipynb",
+    colab_link: "https://colab.research.google.com/github/NVIDIA/NVFlare/blob/main/examples/tutorials/flare_simulator.ipynb"
   },
   {
     title: "POC Mode",
@@ -48,23 +51,18 @@ const tutorials = [
     link: "https://github.com/NVIDIA/NVFlare/tree/main/examples/tutorials/setup_poc.ipynb"
   },
   {
-    title: "Containerized Deployment with Docker",
-    tags: ["beg.", "deployment"],
-    description:
-      "Run NVIDIA FLARE in a Docker container.",
-    link: "https://nvflare.readthedocs.io/en/main/getting_started.html#containerized-deployment-with-docker",
-  },
-  {
     title: "FLARE API",
     tags: ["beg.", "tools"],
     description: "Manage system and jobs programmatically with the python FLARE API.",
-    link: "https://github.com/NVIDIA/NVFlare/tree/main/examples/tutorials/flare_api.ipynb"
+    link: "https://github.com/NVIDIA/NVFlare/tree/main/examples/tutorials/flare_api.ipynb",
+    colab_link: "https://colab.research.google.com/github/NVIDIA/NVFlare/blob/main/examples/tutorials/flare_api.ipynb"
   },
   {
     title: "Job CLI",
     tags: ["beg.", "tools"],
     description: "Job CLI for options to create and submit jobs from a command line interface in POC or production environments.",
-    link: "https://github.com/NVIDIA/NVFlare/tree/main/examples/tutorials/job_cli.ipynb"
+    link: "https://github.com/NVIDIA/NVFlare/tree/main/examples/tutorials/job_cli.ipynb",
+    colab_link: "https://colab.research.google.com/github/NVIDIA/NVFlare/blob/main/examples/tutorials/job_cli.ipynb"
   },
   {
     title: "Operating NVIDIA FLARE: Admin Client, Commands, FLARE API",
@@ -90,6 +88,13 @@ const tutorials = [
     tags: ["int.", "tools", "pytorch"],
     description: "Example integrating NVIDIA FLARE with Weights and Biases streaming capability from clients to the server.",
     link: "https://github.com/NVIDIA/NVFlare/tree/main/examples/advanced/experiment-tracking/wandb/README.md"
+  },
+  {
+    title: "Containerized Deployment with Docker",
+    tags: ["beg.", "deployment"],
+    description:
+      "Run NVIDIA FLARE in a Docker container.",
+    link: "https://nvflare.readthedocs.io/en/main/getting_started.html#containerized-deployment-with-docker",
   },
   {
     title: "Cloud Deployment",
@@ -493,9 +498,9 @@ const tag_list = [
         <div class="bg-gray-50 max-w-5xl mx-auto mt-4 rounded-md">
 
           <!-- Highlights Accordion -->
-          <div data-accordion="open" data-active-classes="dark:bg-gray-500 text-gray-500 dark:text-white" data-inactive-classes="text-gray-500 dark:text-gray-400">
+          <div id="highlights-accordion" data-accordion="open" data-active-classes="dark:bg-gray-500 text-gray-500 dark:text-white" data-inactive-classes="text-gray-500 dark:text-gray-400">
             <h2 class="">
-              <button type="button" class="flex items-center justify-between mr-4 py-2 font-medium rtl:text-right text-gray-900 border-gray-200 dark:border-gray-700 dark:text-gray-400 gap-3" data-accordion-target="#highlights-glide" aria-expanded="true" aria-controls="highlights-glide">
+              <button type="button" class="flex items-center justify-between mr-4 py-2 font-medium rtl:text-right text-gray-900 border-gray-200 dark:border-gray-700 dark:text-gray-400 gap-3" data-accordion-target="#highlights-glide" aria-expanded="false" aria-controls="highlights-glide">
                 <span class="ms-4 mt-1">Highlights</span>
                 <svg class="w-6 h-6 text-gray-800 dark:text-white stroke-nvidia" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                   <path stroke-width="2" d="M11.083 5.104c.35-.8 1.485-.8 1.834 0l1.752 4.022a1 1 0 0 0 .84.597l4.463.342c.9.069 1.255 1.2.556 1.771l-3.33 2.723a1 1 0 0 0-.337 1.016l1.03 4.119c.214.858-.71 1.552-1.474 1.106l-3.913-2.281a1 1 0 0 0-1.008 0L7.583 20.8c-.764.446-1.688-.248-1.474-1.106l1.03-4.119A1 1 0 0 0 6.8 14.56l-3.33-2.723c-.698-.571-.342-1.702.557-1.771l4.462-.342a1 1 0 0 0 .84-.597l1.753-4.022Z"/>
@@ -608,11 +613,15 @@ const tag_list = [
       }
     };
   });
+
+  const highlightsGlide = document.getElementById('highlights-glide');
+  highlightsGlide?.classList.add('hidden');
+
 </script>
 
 
-<script define:vars={{highlights, tutorials, tag_list}} is:inline>
-  
+<script define:vars={{highlights, tutorials, tag_list, GoogleColab}} is:inline>
+
   const checkboxes = document.querySelectorAll('.check');
   const filtersContainer = document.getElementById('filter-categories');
   const searchInput = document.getElementById('search-bar');
@@ -642,6 +651,20 @@ const tag_list = [
         </div>`
     )).join(" ")
 
+    let colab_button = ``;
+    if (tutorial.colab_link) {
+      colab_button = `
+      <span class="h-full w-px bg-gray-200"></span>
+        <a href="${tutorial.colab_link}" class="flex-1 border border-transparent h-full flex items-center justify-center text-sm font-semibold text-gray-900">
+          <div class="flex items-center">
+            <svg class="pb-1 w-6 h-6 me-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
+              <image class="w-6 h-6" href="${GoogleColab.src}" alt="Google Colab logo"></image>
+            </svg>
+            <span>Google Colab</span>
+          </div>
+        </a>`;
+    }
+
     tutorialElement.innerHTML = `
     <div class="flex flex-col gap-1 divide-gray-200 rounded-lg bg-white shadow-md h-80">
       <div>
@@ -658,9 +681,10 @@ const tag_list = [
         </p>
       </div>
       <div class="h-14 flex-shrink-0 flex justify-center items-center border-t border-gray-200">
-        <a href="${tutorial.link}" class="rounded-bl-lg border border-transparent py-2 px-4 text-sm font-semibold text-gray-900">
+        <a href="${tutorial.link}" class="flex-1 border-gray-200 h-full flex items-center justify-center text-sm font-semibold text-gray-900">
           Go to Tutorial
         </a>
+        ${colab_button}
       </div>
     </div>`;
 
@@ -674,10 +698,10 @@ const tag_list = [
 
       // Check to see if tutorial matches the search or checked items
       const matchesSearchTerm = (
-        tutorial.title.toLowerCase().includes(searchTerm) 
+        tutorial.title.toLowerCase().includes(searchTerm)
         || tutorial.description.toLowerCase().includes(searchTerm)
       );
-      
+
       var isInCheckedCategory = true;
 
       checkedCategories.forEach((tag) => {
