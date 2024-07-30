@@ -162,6 +162,8 @@ class FedJob:
             if isinstance(obj, ScriptExecutor):
                 external_scripts = [obj._task_script_path]
                 self._deploy_map[target].add_external_scripts(external_scripts)
+                import os
+                obj._task_script_path = os.path.basename(obj._task_script_path)
             if target not in self.clients:
                 self.clients.append(target)
             if gpu is not None:
