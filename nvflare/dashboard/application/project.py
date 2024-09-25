@@ -36,7 +36,7 @@ def downloads_html():
     return app.send_static_file("nvflare-dashboard/downloads.html")
 
 
-@app.route("/nvflare-dashboard")
+@app.route("/nvflare-dashboard", strict_slashes=False)
 def index_html_dashboard():
     return app.send_static_file("nvflare-dashboard/index.html")
 
@@ -79,7 +79,7 @@ def user_dashboard_html():
     return app.send_static_file("nvflare-dashboard/user-dashboard.html")
 
 
-@app.route("/api/v1/login", methods=["POST"])
+@app.route("/nvflare-dashboard/api/v1/login", methods=["POST"])
 def login():
     req = request.json
     email = req.get("email", None)
@@ -99,7 +99,7 @@ def login():
         return jsonify({"status": "unauthenticated"}), 401
 
 
-@app.route("/api/v1/overseer/blob", methods=["POST"])
+@app.route("/nvflare-dashboard/api/v1/overseer/blob", methods=["POST"])
 @jwt_required()
 def overseer_blob():
     claims = get_jwt()
@@ -114,7 +114,7 @@ def overseer_blob():
         return jsonify({"status": "unauthorized"}), 403
 
 
-@app.route("/api/v1/servers/<int:id>/blob", methods=["POST"])
+@app.route("/nvflare-dashboard/api/v1/servers/<int:id>/blob", methods=["POST"])
 @jwt_required()
 def server_blob(id):
     claims = get_jwt()
@@ -129,7 +129,7 @@ def server_blob(id):
         return jsonify({"status": "unauthorized"}), 403
 
 
-@app.route("/api/v1/project", methods=["PATCH"])
+@app.route("/nvflare-dashboard/api/v1/project", methods=["PATCH"])
 @jwt_required()
 def set_project():
     claims = get_jwt()
@@ -140,11 +140,11 @@ def set_project():
         return jsonify({"status": "unauthorized"}), 403
 
 
-@app.route("/api/v1/project", methods=["GET"])
+@app.route("/nvflare-dashboard/api/v1/project", methods=["GET"])
 def get_project():
     return jsonify(Store.get_project())
 
 
-@app.route("/api/v1/organizations", methods=["GET"])
+@app.route("/nvflare-dashboard/api/v1/organizations", methods=["GET"])
 def get_orgs():
     return jsonify(Store.get_orgs())
