@@ -12,6 +12,8 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site).toString();
 const { title } = Astro.props;
 
 const makeTitle = title ? title + " | " + "NVIDIA FLARE" : "NVIDIA FLARE";
+
+const base_url = import.meta.env.BASE_URL;
 ---
 
 <!doctype html>
@@ -45,5 +47,27 @@ const makeTitle = title ? title + " | " + "NVIDIA FLARE" : "NVIDIA FLARE";
     </style>
     <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
     <script src="prismjs/prism.js"></script>
+    <!-- <script async defer src=`${base_url}/testtt/sa_latest.js`></script> -->
+    <!-- <noscript>
+      <img src="https://queue.simpleanalyticscdn.com/noscript.gif" alt="" referrerpolicy="no-referrer-when-downgrade" />
+    </noscript> -->
+    <!-- <script>
+      (function() {
+        var script = document.createElement('script');
+        script.async = true;
+        script.defer = true;
+        script.src = "/scripts/data"; // Rename to something non-tracking
+        document.body.appendChild(script);
+      })();
+    </script> -->
+    <script>
+      (function() {
+        var script = document.createElement('script');
+        script.async = true;
+        script.defer = true;
+        script.src = `${base_url}/testtt/sa_latest.js`; // Rename to something non-tracking
+        document.body.appendChild(script);
+      })();
+    </script>
   </body>
 </html>

@@ -6,6 +6,7 @@ on:
     branches:
       - "main"
       - "2.5"
+      - "web_analytics"
     paths:
       - 'web/**'
   workflow_dispatch:
