@@ -1,24 +1,29 @@
 <!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><link rel="icon" type="image/x-icon" href="public/favicon.ico"><meta name="generator" content="Astro v3.6.5"><title>NVIDIA FLARE</title><link rel="canonical" href="https://syangster.github.io/NVFlare/version/web_sa/catalog/"><meta name="description" content="NVIDIA FLARE™ (NVIDIA Federated Learning Application Runtime Environment) is a domain-agnostic, open-source, and extensible SDK for Federated Learning."><meta name="robots" content="index, follow"><link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@glidejs/glide/dist/css/glide.theme.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@glidejs/glide/dist/css/glide.core.min.css"><link rel="stylesheet" href="/NVFlare/version/web_sa/_astro/agnostic.75fa3f72.css" /><script type="module" src="/NVFlare/version/web_sa/_astro/hoisted.c7c1cb33.js"></script></head> <body>  <div> <div class="bg-white py-16 sm:py-16"> <script>(function(){const div_id = "tutorials_div";
 const eventLabel = "Tutorials";
 
-  // Declare umami as a global variable
-  declare var umami: any;
-
   document.addEventListener('DOMContentLoaded', function() {
-    const section_div = document.getElementById(div_id);
+    // Wait for the DOM to be fully loaded
+    setTimeout(() => {
+      const section_div = document.getElementById(div_id);
 
-    if (section_div) { // Check if section_div is not null
-      let hasTracked = false; // Flag to track whether the event has been sent
+      if (section_div) {
+        let hasTracked = false; // Flag to track whether the event has been sent
 
-      section_div.onclick = () => {
-        if (!hasTracked) {
-          umami.track(eventLabel); // Track using the eventLabel passed via define:vars
-          hasTracked = true; // Set the flag to true after the first event
-        }
-      };
-    } else {
-      console.warn(`Element with id "${div_id}" not found.`);
-    }
+        section_div.onclick = () => {
+          if (!hasTracked) {
+            // Directly use umami variable
+            if (typeof umami !== 'undefined') {
+              umami.track(eventLabel); // Track using the eventLabel passed
+            } else {
+              console.error('Umami tracking is not defined.');
+            }
+            hasTracked = true; // Set the flag to true after the first event
+          }
+        };
+      } else {
+        console.warn(`Element with id "${div_id}" not found.`);
+      }
+    }, 0); // Delay execution
   });
 })();</script> <div id="tutorials_div" class="mx-auto max-w-[1600px] px-6 lg:px-8"> <div class="mx-auto max-w-5xl mt-10 flex justify-left"> <a href="/NVFlare/version/web_sa" class="text-sm font-semibold leading-6 text-nvidia"> <span aria-hidden="true">&larr;</span>
 Back to home
