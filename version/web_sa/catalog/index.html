@@ -1,5 +1,5 @@
 <!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><link rel="icon" type="image/x-icon" href="public/favicon.ico"><meta name="generator" content="Astro v3.6.5"><title>NVIDIA FLARE</title><link rel="canonical" href="https://syangster.github.io/NVFlare/version/web_sa/catalog/"><meta name="description" content="NVIDIA FLARE™ (NVIDIA Federated Learning Application Runtime Environment) is a domain-agnostic, open-source, and extensible SDK for Federated Learning."><meta name="robots" content="index, follow"><link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@glidejs/glide/dist/css/glide.theme.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@glidejs/glide/dist/css/glide.core.min.css"><link rel="stylesheet" href="/NVFlare/version/web_sa/_astro/agnostic.75fa3f72.css" /><script type="module" src="/NVFlare/version/web_sa/_astro/hoisted.c7c1cb33.js"></script></head> <body>  <div> <script>(function(){const div_id = "tutorials_div";
-const eventLabel = "Tutorials";
+const eventLabel = "Tutorial Catalog";
 
   document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => {
@@ -13,7 +13,7 @@ const eventLabel = "Tutorials";
             if (typeof umami !== 'undefined') {
               umami.track(eventLabel);
             } else {
-              console.error('Umami tracking is not defined.');
+              console.error('umami is not defined.');
             }
             hasTracked = true;
           }
@@ -50,16 +50,6 @@ const tutorials = [{"title":"Intro to the FL Simulator","tags":["beg.","tools"],
 const tag_list = [{"name":"Experience Level","id":"level","list":["beg.","int.","adv."]},{"name":"Tutorial Category","id":"tutorial-category","list":["algorithm","tools","deployment","research"]},{"name":"Application Type","id":"application-type","list":["ml","dl","llm","analytics"]},{"name":"Framework","id":"framework","list":["pytorch","tensorflow","lightning","xgboost","sklearn","numpy","nemo","monai","huggingface"]},{"name":"Industry Domain","id":"industry-domain","list":["healthcare","finance"]},{"name":"FLARE API","id":"flare-api","list":["client-api","model-controller","learner"]},{"name":"Privacy Algorithm","id":"privacy-algorithm","list":["he","dp"]}];
 const GoogleColab = {"src":"/NVFlare/version/web_sa/_astro/google_colab.svg.6e34820a.png","width":800,"height":493,"format":"png"};
 
-
-  // const tutorials_div = document.getElementById('tutorials_div');
-  // let hasTracked = false; // Flag to track whether the event has been sent
-
-  // tutorials_div.onclick = () => {
-  //   if (!hasTracked) {
-  //     umami.track('Tutorials');
-  //     hasTracked = true; // Set the flag to true after the first event
-  //   }
-  // };
 
   const checkboxes = document.querySelectorAll('.check');
   const filtersContainer = document.getElementById('filter-categories');
