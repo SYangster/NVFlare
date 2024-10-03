@@ -27,7 +27,14 @@ const GoogleColab = {"src":"/NVFlare/version/web_sa/_astro/google_colab.svg.6e34
 
 
   const tutorials_div = document.getElementById('tutorials_div');
-  tutorials_div.onclick = () => umami.track('Tutorials');
+  let hasTracked = false; // Flag to track whether the event has been sent
+
+  tutorials_div.onclick = () => {
+    if (!hasTracked) {
+      umami.track('Tutorials');
+      hasTracked = true; // Set the flag to true after the first event
+    }
+  };
 
   const checkboxes = document.querySelectorAll('.check');
   const filtersContainer = document.getElementById('filter-categories');
