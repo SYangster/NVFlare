@@ -7,6 +7,23 @@ Proof Of Concept (POC) Command
 
 The POC command allows users to try out the features of NVFlare in a proof of concept deployment on a single machine.
 
+Different processes represent the server, clients, and the admin console, providing users with a realistic sense of the federated network.
+It also allows users to simulate project deployment on a single host.
+
+
+
+notes:
+
+operating NVFlare with admin client (focus on this)
+
+using the flare API (point to flare_api.ipynb)
+
+more detail for using ht epoc command (point to setup_poc.ipynb)
+
+nvflare job submit 
+
+
+
 Syntax and Usage
 =================
 
@@ -356,6 +373,66 @@ If there is no GPU, then there will be no assignments. If there are GPUs, they w
 
            nvidia-smi --list-gpus
 
+.. _poc_quickstart:
+
+Operating the POC system and Submitting a Job
+==============================================
+After preparing the poc workspace and starting the server, clients, and optionally the console, we now have several options to operate the whole system.
+
+FLARE Console
+--------------
+After starting the FLARE console with
+
+.. code-block:: none
+
+    nvflare poc start -p admin@nvidia.com
+
+Login and submit the job:
+
+.. code-block:: none
+
+    submit_job hello-fedavg-numpy
+
+
+Refer to :ref:`operating_nvflare` for more details.
+
+FLARE API
+---------
+To programmatically operate the system use the :ref:`flare_api`
+
+.. code-block:: python
+
+    import os
+    from nvflare.fuel.flare_api.flare_api import new_secure_session
+
+    poc_workspace = "/tmp/nvflare/poc"
+    poc_prepared = os.path.join(poc_workspace, "example_project/prod_00")
+    admin_dir = os.path.join(poc_prepared, "admin@nvidia.com")
+    sess = new_secure_session("admin@nvidia.com", startup_kit_location=admin_dir)
+
+    job_folder = os.path.join(os.getcwd(), "/tmp/nvflare/exported/job/hello-fedavg-numpy")
+    job_id = sess.submit_job(job_folder)
+
+    print(f"Job is running with ID {job_id}")
+
+Job CLI
+-------
+For convenience, also submit the job to the POC system with the :ref:`job_cli`
+
+
+.. code-block:: none
+
+    nvflare job submit -j /tmp/nvflare/exported/job/hello-fedavg-numpy
+
+
+
+flare console, login, submit job, point to docs
+
+flare api, submit job
+
+job cli, submit job
+
+
 Stop Package(s)
 ===============
 
@@ -381,3 +458,8 @@ There is a command to clean up the POC workspace added in version 2.2 that will 
 .. code-block::
 
     nvflare poc clean
+
+More Details
+============
+
+setup_poc.ipynb
