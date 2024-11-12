@@ -21,6 +21,7 @@ from nvflare.fuel.hci.client.api_spec import CommandContext
 from nvflare.fuel.hci.client.api_status import APIStatus
 from nvflare.fuel.hci.proto import MetaStatusValue, ProtoKey, make_meta
 from nvflare.fuel.hci.reg import CommandModule, CommandModuleSpec, CommandSpec
+from nvflare.fuel.utils.obj_utils import get_logger
 from nvflare.security.logging import secure_format_exception
 
 
@@ -29,7 +30,7 @@ class HACommandModule(CommandModule):
 
     def __init__(self, overseer_agent: OverseerAgent):
         self.overseer_agent = overseer_agent
-        self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger = get_logger(self)
 
     def get_spec(self):
         return CommandModuleSpec(

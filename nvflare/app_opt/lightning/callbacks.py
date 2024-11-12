@@ -18,13 +18,15 @@ from copy import deepcopy
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import Callback
 
+from nvflare.fuel.utils.obj_utils import get_logger
+
 
 class RestoreState(Callback):
     """Callback to restore the local optimizer and learning rate scheduler states at each round of FL"""
 
     def __init__(self):
         super().__init__()
-        self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger = get_logger(self)
 
         self.optimizer_states = []
         self.scaler_states = []

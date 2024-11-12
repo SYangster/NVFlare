@@ -20,6 +20,7 @@ import pkgutil
 import sys
 import warnings
 from logging.handlers import RotatingFileHandler
+from logging import StreamHandler #testing
 from typing import Any, List, Union
 
 from nvflare.apis.app_validation import AppValidator
@@ -61,15 +62,11 @@ from .app_authz import AppAuthzService
 
 def add_logfile_handler(log_file: str):
     """Adds a log file handler to the root logger.
-
     The purpose for this is to handle dynamic log file locations.
-
     If a handler named errorFileHandler is found, it will be used as a template to
     create a new handler for writing to the error.log file at the same directory as log_file.
     The original errorFileHandler will be removed and replaced by the new handler.
-
     Each log file will be rotated when it reaches 20MB.
-
     Args:
         log_file (str): log file path
     """
@@ -97,6 +94,39 @@ def add_logfile_handler(log_file: str):
 
     root_logger.addHandler(error_file_handler)
     root_logger.removeHandler(configured_error_handler)
+
+
+def update_logfile_handlers(dir_name):
+    config_log_handler = get_configured_handler("logFileHandler")
+    if config_log_handler:
+        replace_handler(config_log_handler, dir_name)
+    
+    config_error_handler = get_configured_handler("errorFileHandler")
+    if config_error_handler:
+        replace_handler(config_error_handler, dir_name)
+    
+    config_json_handler = get_configured_handler("jsonFileHandler")
+    if config_json_handler:
+        replace_handler(config_json_handler, dir_name)
+
+
+def replace_handler(config_handler, dir_name):
+    log_file = os.path.join(dir_name, os.path.basename(config_handler.baseFilename))
+    log_handler = config_handler.__class__(log_file, maxBytes=20 * 1024 * 1024, backupCount=10)
+    log_handler.setLevel(config_handler.level)
+    log_handler.setFormatter(config_handler.formatter)
+    root_logger = logging.getLogger()
+    root_logger.addHandler(log_handler)
+    root_logger.removeHandler(config_handler)
+
+
+def get_configured_handler(name: str):
+    configured_handler = None
+    for handler in logging.getLogger().handlers:
+        if handler.get_name() == name:
+            configured_handler = handler
+            break
+    return configured_handler
 
 
 def _check_secure_content(site_type: str) -> List[str]:
@@ -264,6 +294,10 @@ def configure_logging(workspace: Workspace):
     log_config_file_path = workspace.get_log_config_file_path()
     assert os.path.isfile(log_config_file_path), f"missing log config file {log_config_file_path}"
     logging.config.fileConfig(fname=log_config_file_path, disable_existing_loggers=False)
+
+    # TODO
+    # from nvflare.fuel.utils.log_utils import read_log_config
+    # dict_config = read_log_config(log_config_file_path, os.path.join(self.args.workspace, "server"))
 
 
 def get_scope_info():

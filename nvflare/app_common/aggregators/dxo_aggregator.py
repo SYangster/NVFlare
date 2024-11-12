@@ -60,8 +60,8 @@ class DXOAggregator(FLComponent):
         self.processed_algorithm = None
 
         if name_postfix:
-            self._name += name_postfix
-            self.logger = logging.getLogger(self._name)
+            self.logger = logging.getLogger(f"{self.__module__}.{self.__class__.__qualname__}{name_postfix}")
+
 
     def reset_aggregation_helper(self):
         if self.aggregation_helper:

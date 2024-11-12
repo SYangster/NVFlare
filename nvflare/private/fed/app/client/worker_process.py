@@ -100,7 +100,7 @@ def main(args):
 
         log_file = workspace.get_app_log_file_path(args.job_id)
         add_logfile_handler(log_file)
-        logger = logging.getLogger("worker_process")
+        logger = logging.getLogger(__name__)
         logger.info("Worker_process started.")
 
         deployer = conf.base_deployer

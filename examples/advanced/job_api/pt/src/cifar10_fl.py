@@ -90,6 +90,12 @@ def main():
                     summary_writer.add_scalar(tag="loss_for_each_batch", scalar=running_loss, global_step=global_step)
                     running_loss = 0.0
 
+                    # testing
+                    # from nvflare.fuel.utils.log_utils import print_loggers_hierarchy
+                    # print_loggers_hierarchy("nvflare")
+                    a = 1/0
+                    #break 
+
         print("Finished Training")
 
         PATH = "./cifar_net.pth"

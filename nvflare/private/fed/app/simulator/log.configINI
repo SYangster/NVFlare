@@ -1,0 +1,60 @@
+[loggers]
+keys=root, nvflare.app_common, nvflare.app_opt
+
+[handlers]
+keys=consoleHandler, logFileHandler, errorFileHandler, jsonFileHandler
+
+[formatters]
+keys=colorFormatter, shortNameFormatter, jsonFormatter
+
+[logger_root]
+level=INFO
+handlers=consoleHandler, logFileHandler, errorFileHandler, jsonFileHandler
+
+[handler_consoleHandler]
+class=StreamHandler
+level=DEBUG
+formatter=colorFormatter
+args=(sys.stdout,)
+
+[handler_logFileHandler]
+class=logging.handlers.RotatingFileHandler
+level=DEBUG
+formatter=shortNameFormatter
+args=('log.txt', 'a')
+
+[handler_errorFileHandler]
+class=logging.handlers.RotatingFileHandler
+level=ERROR
+formatter=shortNameFormatter
+args=('log_error.txt', 'a')
+
+[handler_jsonFileHandler]
+class=logging.handlers.RotatingFileHandler
+level=DEBUG
+formatter=jsonFormatter
+args=('log_json.txt', 'a')
+
+[formatter_shortNameFormatter]
+class=nvflare.fuel.utils.log_utils.ShortNameFormatter
+format=%(asctime)s - %(name)s - %(levelname)s - %(message)s - %(lineno)d - %(module)s - %(process)d - %(processName)s - %(thread)d - %(threadName)s
+
+[formatter_colorFormatter]
+class=nvflare.fuel.utils.log_utils.ColorFormatter
+format=%(asctime)s - %(name)s - %(levelname)s - %(message)s
+
+[formatter_jsonFormatter]
+class=nvflare.fuel.utils.log_utils.JsonFormatter
+format=%(asctime)s - %(name)s - %(levelname)s - %(message)s
+
+[logger_nvflare.app_common]
+level=INFO
+handlers=consoleHandler
+qualname=nvflare.app_common
+propagate=0
+
+[logger_nvflare.app_opt]
+level=INFO
+handlers=consoleHandler
+qualname=nvflare.app_opt
+propagate=0
