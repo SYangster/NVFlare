@@ -21,6 +21,7 @@ import traceback
 from nvflare.client.in_process.api import TOPIC_ABORT
 from nvflare.fuel.data_event.data_bus import DataBus
 from nvflare.fuel.data_event.event_manager import EventManager
+from nvflare.fuel.utils.obj_utils import get_logger
 
 print_fn = builtins.print
 
@@ -41,7 +42,7 @@ class TaskScriptRunner:
         self.event_manager = EventManager(DataBus())
         self.script_args = script_args
         self.custom_dir = custom_dir
-        self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger = get_logger(self)
         self.script_path = script_path
         self.script_full_path = self.get_script_full_path(self.custom_dir, self.script_path)
 
@@ -50,7 +51,8 @@ class TaskScriptRunner:
         self.logger.info(f"start task run() with full path: {self.script_full_path}")
         try:
             curr_argv = sys.argv
-            builtins.print = log_print if self.redirect_print_to_log else print_fn
+            #builtins.print = log_print if self.redirect_print_to_log else print_fn
+            builtins.print = self.log_print if self.redirect_print_to_log else print_fn
             sys.argv = self.get_sys_argv()
             runpy.run_path(self.script_full_path, run_name="__main__")
             sys.argv = curr_argv
@@ -111,9 +113,14 @@ class TaskScriptRunner:
             self.event_manager.fire_event(TOPIC_ABORT, f"'{self.script_path}' is aborted, {msg}")
             raise ValueError(msg)
         return target_file
+    
+    def log_print(self, *args, **kwargs):
+        # Create a message from print arguments
+        message = " ".join(str(arg) for arg in args)
+        self.logger.info(message)
 
 
-def log_print(*args, logger=TaskScriptRunner.logger, **kwargs):
-    # Create a message from print arguments
-    message = " ".join(str(arg) for arg in args)
-    logger.info(message)
+# def log_print(*args, logger=TaskScriptRunner.logger, **kwargs):
+#     # Create a message from print arguments
+#     message = " ".join(str(arg) for arg in args)
+#     logger.info(message)

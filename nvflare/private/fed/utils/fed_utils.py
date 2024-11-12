@@ -20,6 +20,7 @@ import pkgutil
 import sys
 import warnings
 from logging.handlers import RotatingFileHandler
+from logging import StreamHandler #testing
 from typing import Any, List, Union
 
 from nvflare.apis.app_validation import AppValidator
@@ -59,7 +60,10 @@ from ..simulator.simulator_const import SimulatorConstants
 from .app_authz import AppAuthzService
 
 
-def add_logfile_handler(log_file: str):
+from nvflare.fuel.utils.log_utils import JsonFormatter, ColorFormatter
+
+
+def add_logfile_handler(log_file):
     """Adds a log file handler to the root logger.
 
     The purpose for this is to handle dynamic log file locations.
@@ -73,30 +77,56 @@ def add_logfile_handler(log_file: str):
     Args:
         log_file (str): log file path
     """
+
     root_logger = logging.getLogger()
-    configured_handlers = root_logger.handlers
-    main_handler = root_logger.handlers[0]
-    file_handler = RotatingFileHandler(log_file, maxBytes=20 * 1024 * 1024, backupCount=10)
-    file_handler.setLevel(main_handler.level)
-    file_handler.setFormatter(main_handler.formatter)
-    root_logger.addHandler(file_handler)
+    # main_handler = root_logger.handlers[0]
+    # file_handler = RotatingFileHandler(log_file, maxBytes=20 * 1024 * 1024, backupCount=10)
+    # file_handler.setLevel(main_handler.level)
+    # file_handler.setFormatter(main_handler.formatter)
+    # root_logger.addHandler(file_handler)
 
-    configured_error_handler = None
-    for handler in configured_handlers:
-        if handler.get_name() == "errorFileHandler":
-            configured_error_handler = handler
+    config_console_handler = get_configured_handler("consoleHandler")
+    if config_console_handler:
+        console_handler = StreamHandler(sys.stdout)
+        console_handler.setLevel(config_console_handler.level)
+        console_handler.setFormatter(ColorFormatter())
+        root_logger.addHandler(console_handler)
+        root_logger.removeHandler(config_console_handler)
+
+    config_log_handler = get_configured_handler("logFileHandler")
+    if config_log_handler:
+        log_handler = RotatingFileHandler(config_log_handler.baseFilename, maxBytes=20 * 1024 * 1024, backupCount=10)
+        log_handler.setLevel(config_log_handler.level)
+        log_handler.setFormatter(config_log_handler.formatter)
+        root_logger.addHandler(log_handler)
+        root_logger.removeHandler(config_log_handler)
+    
+    config_error_handler = get_configured_handler("errorFileHandler")
+    if config_error_handler:
+        error_log_file = os.path.join(os.path.dirname(log_file), "log_error.txt") #TODO when sending error log to server, need to store log name (databus?)
+        error_file_handler = RotatingFileHandler(error_log_file, maxBytes=20 * 1024 * 1024, backupCount=10)
+        error_file_handler.setLevel(config_error_handler.level)
+        error_file_handler.setFormatter(config_error_handler.formatter)
+        root_logger.addHandler(error_file_handler)
+        root_logger.removeHandler(config_error_handler)
+    
+    config_json_handler = get_configured_handler("jsonFileHandler")
+    if config_json_handler:
+        json_log_file = os.path.join(os.path.dirname(log_file), config_json_handler.baseFilename)
+        json_file_handler = RotatingFileHandler(json_log_file, maxBytes=20 * 1024 * 1024, backupCount=10)
+        json_file_handler.setLevel(config_json_handler.level)
+        json_file_handler.setFormatter(JsonFormatter())
+        root_logger.addHandler(json_file_handler)
+        root_logger.removeHandler(config_json_handler)
+
+
+def get_configured_handler(name: str):
+    configured_handler = None
+    for handler in logging.getLogger().handlers:
+        if handler.get_name() == name:
+            configured_handler = handler
             break
-
-    if not configured_error_handler:
-        return
-
-    error_log_file = os.path.join(os.path.dirname(log_file), "error.log")
-    error_file_handler = RotatingFileHandler(error_log_file, maxBytes=20 * 1024 * 1024, backupCount=10)
-    error_file_handler.setLevel(configured_error_handler.level)
-    error_file_handler.setFormatter(configured_error_handler.formatter)
-
-    root_logger.addHandler(error_file_handler)
-    root_logger.removeHandler(configured_error_handler)
+    return configured_handler
 
 
 def _check_secure_content(site_type: str) -> List[str]:

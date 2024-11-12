@@ -47,6 +47,8 @@ from nvflare.private.fed.utils.fed_utils import (
 from nvflare.security.logging import secure_format_exception, secure_log_traceback
 from nvflare.security.security import EmptyAuthorizer
 
+from nvflare.fuel.utils.log_utils import print_loggers_hierarchy
+
 CELL_CONNECT_CHECK_TIMEOUT = 10.0
 FETCH_TASK_RUN_RETRY = 3
 
@@ -174,6 +176,11 @@ class ClientTaskWorker(FLComponent):
         except Exception as e:
             self.logger.error(f"ClientTaskWorker run error: {secure_format_exception(e)}")
         finally:
+            if client.client_name == "site-1":
+                time.sleep(8)
+                print(f"\n============ CLIENT LOGGERS START =============== {client.client_name=}:\n")
+                print_loggers_hierarchy("nvflare")
+                print(f"\n============ CLIENT LOGGERS END =============== {client.client_name=}:\n")
             if client:
                 client.cell.stop()
             if admin_agent:
@@ -238,9 +245,10 @@ def main(args):
     thread = threading.Thread(target=check_parent_alive, args=(parent_pid, stop_event))
     thread.start()
 
-    logging.config.fileConfig(fname=args.logging_config, disable_existing_loggers=False)
+    from nvflare.fuel.utils.log_utils import read_log_config
+
+    dict_config = read_log_config(args.logging_config, args.workspace)
     log_file = os.path.join(args.workspace, WorkspaceConstants.LOG_FILE_NAME)
-    add_logfile_handler(log_file)
 
     os.chdir(args.workspace)
     startup = os.path.join(args.workspace, WorkspaceConstants.STARTUP_FOLDER_NAME)
@@ -248,6 +256,11 @@ def main(args):
     local = os.path.join(args.workspace, WorkspaceConstants.SITE_FOLDER_NAME)
     os.makedirs(local, exist_ok=True)
     workspace = Workspace(root_dir=args.workspace, site_name=args.client)
+
+    if dict_config:
+        logging.config.dictConfig(dict_config)
+    else:
+        add_logfile_handler(log_file)
 
     fobs_initialize(workspace, job_id=SimulatorConstants.JOB_NAME)
     register_ext_decomposers(args.decomposer_module)

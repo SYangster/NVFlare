@@ -73,6 +73,8 @@ from nvflare.private.fed.utils.fed_utils import (
 from nvflare.security.logging import secure_format_exception, secure_log_traceback
 from nvflare.security.security import EmptyAuthorizer
 
+from nvflare.fuel.utils.log_utils import print_loggers_hierarchy
+
 CLIENT_CREATE_POOL_SIZE = 200
 POOL_STATS_DIR = "pool_stats"
 SIMULATOR_POOL_STATS = "simulator_cell_stats.json"
@@ -152,8 +154,12 @@ class SimulatorRunner(FLComponent):
 
         log_config_file_path = os.path.join(self.args.workspace, "local", WorkspaceConstants.LOGGING_CONFIG)
         if not os.path.isfile(log_config_file_path):
+            print("\n\tUsing simulator logging config! TODO try local")
             log_config_file_path = os.path.join(os.path.dirname(__file__), WorkspaceConstants.LOGGING_CONFIG)
-        logging.config.fileConfig(fname=log_config_file_path, disable_existing_loggers=False)
+
+        from nvflare.fuel.utils.log_utils import read_log_config
+
+        dict_config = read_log_config(log_config_file_path, os.path.join(self.args.workspace, "server"))
 
         self.args.log_config = None
         self.args.config_folder = "config"
@@ -172,12 +178,18 @@ class SimulatorRunner(FLComponent):
         AuditService.the_auditor = SimulatorAuditor()
 
         self.simulator_root = self.args.workspace
+        
         self._cleanup_workspace()
         init_security_content_service(self.args.workspace)
 
         os.makedirs(os.path.join(self.simulator_root, "server"))
+
         log_file = os.path.join(self.simulator_root, "server", WorkspaceConstants.LOG_FILE_NAME)
-        add_logfile_handler(log_file)
+
+        if dict_config:
+            logging.config.dictConfig(dict_config)
+        else:
+            add_logfile_handler(log_file)
 
         try:
             data_bytes, job_name, meta = self.validate_job_data()
@@ -493,6 +505,10 @@ class SimulatorRunner(FLComponent):
             finally:
                 # self.services.close()
                 self.deployer.close()
+                time.sleep(12)
+                print("\n============ SERVER LOGGERS START ===============:\n")
+                #print_loggers_hierarchy("nvflare")
+                print("\n============ SERVER LOGGERS END ===============\n")
         else:
             run_status = 1
         return run_status

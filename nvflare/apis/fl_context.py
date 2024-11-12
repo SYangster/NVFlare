@@ -16,6 +16,8 @@ import logging
 import threading
 from typing import Any, Dict, List
 
+from nvflare.fuel.utils.obj_utils import get_logger
+
 from .fl_constant import ReservedKey
 
 _update_lock = threading.Lock()
@@ -72,7 +74,7 @@ class FLContext(object):
         """
         self.model = None
         self.props = {}
-        self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger = get_logger(self)        
 
     def get_prop_keys(self) -> List[str]:
         return list(self.props.keys())

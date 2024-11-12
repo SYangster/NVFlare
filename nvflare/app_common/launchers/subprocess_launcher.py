@@ -24,6 +24,7 @@ from nvflare.apis.fl_context import FLContext
 from nvflare.apis.shareable import Shareable
 from nvflare.apis.signal import Signal
 from nvflare.app_common.abstract.launcher import Launcher, LauncherRunStatus
+from nvflare.fuel.utils.obj_utils import get_logger
 from nvflare.private.fed.utils.fed_utils import add_custom_dir_to_path
 
 
@@ -47,7 +48,7 @@ class SubprocessLauncher(Launcher):
         self._script = script
         self._launch_once = launch_once
         self._clean_up_script = clean_up_script
-        self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger = get_logger(self)
 
     def initialize(self, fl_ctx: FLContext):
         self._app_dir = self.get_app_dir(fl_ctx)
