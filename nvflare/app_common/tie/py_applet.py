@@ -95,7 +95,7 @@ class _PyStarter:
                 # enable logging
                 run_dir = self.workspace.get_run_dir(self.job_id)
                 log_file_name = os.path.join(run_dir, "applet_log.txt")
-                configure_logging(self.workspace)
+                configure_logging(self.workspace, run_dir)
                 add_log_file_handler(log_file_name)
             self.runner.start(app_ctx)
 

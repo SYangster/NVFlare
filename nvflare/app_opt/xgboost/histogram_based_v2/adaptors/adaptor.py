@@ -65,7 +65,7 @@ class _RunnerStarter:
                 run_dir = self.workspace.get_run_dir(self.job_id)
                 log_file_name = os.path.join(run_dir, f"{self.app_name}_log.txt")
                 print(f"XGB Log: {log_file_name}")
-                configure_logging(self.workspace)
+                configure_logging(self.workspace, run_dir)
                 add_log_file_handler(log_file_name)
             self.runner.run(ctx)
             self.stopped = True

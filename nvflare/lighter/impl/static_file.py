@@ -174,7 +174,7 @@ class StaticFileBuilder(Builder):
         # local folder creation
         dest_dir = self.get_local_dir(server, ctx)
         utils._write(
-            os.path.join(dest_dir, "log.config.default"),
+            os.path.join(dest_dir, "log_config.json.default"),
             self.template["log_config"],
             "t",
         )
@@ -251,7 +251,7 @@ class StaticFileBuilder(Builder):
         # local folder creation
         dest_dir = self.get_local_dir(client, ctx)
         utils._write(
-            os.path.join(dest_dir, "log.config.default"),
+            os.path.join(dest_dir, "log_config.json.default"),
             self.template["log_config"],
             "t",
         )
