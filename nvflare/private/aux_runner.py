@@ -42,7 +42,7 @@ class AuxMsgTarget:
     @staticmethod
     def client_target(client: Client):
         return AuxMsgTarget(client.name, client.get_fqcn())
-
+    
     def __str__(self):
         return f"AuxMsgTarget[name={self.name} fqcn={self.fqcn}]"
 

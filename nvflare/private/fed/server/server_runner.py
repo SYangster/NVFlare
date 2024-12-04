@@ -554,3 +554,58 @@ class ServerRunner(TBI):
     def restore(self, state_data: dict, fl_ctx: FLContext):
         self.job_id = state_data.get("job_id")
         self.current_wf_index = int(state_data.get("current_wf_index", 0))
+
+    def configure_logging(self, fl_ctx: FLContext) -> Shareable:
+        from nvflare.fuel.utils.log_utils import read_log_config
+        import logging.config
+        import os
+
+        self.engine.get_workspace()
+        dir_path = self.engine.get_workspace().get_run_dir(self.job_id)
+        dict_config = {
+            "version": 1,
+            "disable_existing_loggers": False,
+            "formatters": {
+                "baseFormatter": {
+                    "()": "nvflare.fuel.utils.log_utils.BaseFormatter",
+                    "fmt": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+                },
+                "colorFormatter": {
+                    "()": "nvflare.fuel.utils.log_utils.ColorFormatter",
+                    "fmt": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+                    "level_colors": {
+                        "DEBUG": "38",
+                        "INFO": "38;5;208",
+                        "WARNING": "33",
+                        "ERROR": "31",
+                        "CRITICAL": "31;1",
+                    }
+                }
+            },
+            "handlers": {
+                "consoleHandler": {
+                    "class": "logging.StreamHandler",
+                    "level": "DEBUG",
+                    "formatter": "colorFormatter",
+                    "stream": "ext://sys.stdout"
+                },
+                "logFileHandler": {
+                    "class": "logging.handlers.RotatingFileHandler",
+                    "level": "DEBUG",
+                    "formatter": "baseFormatter",
+                    "filename": f"{os.path.join(dir_path, 'log2.txt')}",
+                    "mode": "a",
+                    "maxBytes": 20971520,
+                    "backupCount": 10
+                }
+            },
+            "loggers": {
+                "root": {
+                    "level": "INFO",
+                    "handlers": ["consoleHandler", "logFileHandler"]
+                }
+            }
+        }
+        logging.config.dictConfig(dict_config)
+
+        return make_reply(ReturnCode.OK)

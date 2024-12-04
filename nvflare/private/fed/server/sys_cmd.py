@@ -26,6 +26,8 @@ from nvflare.private.fed.server.admin import new_message
 from nvflare.private.fed.server.cmd_utils import CommandUtil
 from nvflare.security.logging import secure_format_exception
 
+from nvflare.private.defs import RequestHeader
+
 
 def _parse_replies(conn, replies):
     """parses resources from replies."""
@@ -91,6 +93,8 @@ class SystemCommandModule(CommandModule, CommandUtil):
         if len(args) < 2:
             conn.append_error("syntax error: missing site names")
             return
+        
+        print(f"\n\tHEREEE {args=}\n")
 
         target_type = args[1]
         if target_type == self.TARGET_TYPE_SERVER:
@@ -106,10 +110,57 @@ class SystemCommandModule(CommandModule, CommandUtil):
                     "%.1f" % (psutil.virtual_memory().available * 100 / psutil.virtual_memory().total),
                 ]
             )
+
+            # #from nvflare.fuel.utils.log_utils import read_log_config
+            # import logging.config
+            # from nvflare.private.fed.server.server_engine import ServerEngine
+
+            # engine = conn.app_ctx
+            # if not isinstance(engine, ServerEngine):
+            #     raise TypeError("engine must be ServerEngine but got {}".format(type(engine)))
+
+            # #dict_config = read_log_config(log_config_file_path, dir_path)
+            # dict_config = {
+            #     "version": 1,
+            #     "disable_existing_loggers": False,
+            #     "formatters": {
+            #         "baseFormatter": {
+            #             "()": "nvflare.fuel.utils.log_utils.BaseFormatter",
+            #             "fmt": "%(name)s - %(asctime)s - %(levelname)s - %(message)s"
+            #         }
+            #     },
+            #     "handlers": {
+            #         "consoleHandler": {
+            #             "class": "logging.StreamHandler",
+            #             "level": "DEBUG",
+            #             "formatter": "colorFormatter",
+            #             "stream": "ext://sys.stdout"
+            #         },
+            #         "logFileHandler": {
+            #             "class": "logging.handlers.RotatingFileHandler",
+            #             "level": "DEBUG",
+            #             "formatter": "baseFormatter",
+            #             "filename": "log2.txt",
+            #             "mode": "a",
+            #             "maxBytes": 20971520,
+            #             "backupCount": 10
+            #         }
+            #     },
+            #     "loggers": {
+            #         "root": {
+            #             "level": "INFO",
+            #             "handlers": ["consoleHandler", "logFileHandler"]
+            #         }
+            #     }
+            # }
+            # logging.config.dictConfig(dict_config)
+
             return
 
         if target_type == self.TARGET_TYPE_CLIENT:
             message = new_message(conn, topic=SysCommandTopic.SYS_INFO, body="", require_authz=True)
+
+            #message.set_header(RequestHeader.JOB_ID, job_id)
             replies = self.send_request_to_clients(conn, message)
             self._process_replies(conn, replies)
             return

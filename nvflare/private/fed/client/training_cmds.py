@@ -27,6 +27,10 @@ from nvflare.private.fed.client.admin import RequestProcessor
 from nvflare.private.fed.client.client_engine_internal_spec import ClientEngineInternalSpec
 from nvflare.private.fed.utils.fed_utils import get_scope_info
 
+from nvflare.private.fed.client.client_engine_internal_spec import ClientEngineInternalSpec
+from nvflare.private.aux_runner import AuxMsgTarget
+from nvflare.private.defs import RequestHeader
+
 
 class StartAppProcessor(RequestProcessor):
     def get_topics(self) -> List[str]:
@@ -151,6 +155,47 @@ class DeleteRunNumberProcessor(RequestProcessor):
         if not result:
             result = "OK"
         return ok_reply(topic=f"reply_{req.topic}", body=result)
+    
+
+class ConfigureLoggingProcessor(RequestProcessor):
+    def get_topics(self) -> List[str]:
+        return [TrainingTopic.CONFIGURE_LOGGING]
+
+    def process(self, req: Message, app_ctx) -> Message:
+        print(f"\n\t {req=} {req.body=}\n")
+        engine = app_ctx
+        if not isinstance(engine, ClientEngineInternalSpec):
+            raise TypeError("engine must be ClientEngineInternalSpec, but got {}".format(type(engine)))
+        fl_ctx = engine.new_context()
+        
+        #engine.get_all_clients()
+        from nvflare.apis.fl_constant import ReservedTopic
+        from nvflare.apis.shareable import Shareable
+
+        job_id = req.get_header(RequestHeader.JOB_ID)
+        print(f"\n\t {job_id=}\n")
+        
+        # engine.send_aux_request(
+        #     targets=None,
+        #     topic=ReservedTopic.CONFIGURE_LOG,
+        #     request=Shareable(),
+        #     timeout=0.0,
+        #     fl_ctx=fl_ctx,
+        #     optional=True,
+        #     secure=False,
+        # )
+        print(f"\n\t BEFORE SEND AUX REQUEST\n")
+
+        reply = engine.aux_runner.send_aux_request(
+            targets=[AuxMsgTarget(engine.get_client_name(), engine.client_executor._job_fqcn(job_id))],
+            topic=ReservedTopic.CONFIGURE_LOG,
+            request=Shareable(data=req.body),
+            timeout=0.0,
+            fl_ctx=fl_ctx,
+            optional=True,
+            secure=False,
+        )
+        print(f"\n\t AFTER SEND AUX REQUEST REPLY {reply=} \n\t")
 
 
 class ClientStatusProcessor(RequestProcessor):

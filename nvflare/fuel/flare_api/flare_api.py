@@ -295,6 +295,23 @@ class Session(SessionSpec):
         if not job_meta:
             raise InternalError("server failed to return job meta")
         return job_meta
+    
+    def configure_logging(self, job_id: str) -> dict:
+        """Get the meta info of the specified job.
+
+        Args:
+            job_id: ID of the job
+
+        Returns: a dict of job metadata
+
+        """
+        self._validate_job_id(job_id)
+        result = self._do_command(AdminCommandNames.CONFIGURE_LOGGING + " " + job_id)
+        # meta = result[ResultKey.META]
+        # job_meta = meta.get(MetaKey.JOB_META, None)
+        # if not job_meta:
+        #     raise InternalError("server failed to return job meta")
+        return result
 
     def list_jobs(
         self,

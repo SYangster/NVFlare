@@ -156,6 +156,7 @@ class ClientRunner(TBI):
     def _register_aux_message_handlers(self, engine):
         engine.register_aux_message_handler(topic=ReservedTopic.END_RUN, message_handle_func=self._handle_end_run)
         engine.register_aux_message_handler(topic=ReservedTopic.DO_TASK, message_handle_func=self._handle_do_task)
+        engine.register_aux_message_handler(topic=ReservedTopic.CONFIGURE_LOG, message_handle_func=self._handle_configure_log)
 
     @staticmethod
     def _reply_and_audit(reply: Shareable, ref, msg, fl_ctx: FLContext) -> Shareable:
@@ -691,6 +692,48 @@ class ClientRunner(TBI):
                     group_name="ClientRunner",
                     info={"job_id": self.job_id, "current_tasks": current_tasks},
                 )
+        # elif event_type == EventType.AFTER_SEND_TASK_RESULT: #TestChange to configure logging event!!!
+        #     self.engine.get_workspace()
+        #     dir_path = self.engine.get_workspace().get_app_dir(self.job_id)
+        #     from nvflare.fuel.utils.log_utils import read_log_config
+        #     import logging.config
+        #     import os
+
+        #     dict_config = {
+        #         "version": 1,
+        #         "disable_existing_loggers": False,
+        #         "formatters": {
+        #             "baseFormatter": {
+        #                 "()": "nvflare.fuel.utils.log_utils.BaseFormatter",
+        #                 "fmt": "%(name)s - %(asctime)s - %(levelname)s - %(message)s"
+        #             }
+        #         },
+        #         "handlers": {
+        #             "consoleHandler": {
+        #                 "class": "logging.StreamHandler",
+        #                 "level": "DEBUG",
+        #                 "formatter": "baseFormatter",
+        #                 "stream": "ext://sys.stdout"
+        #             },
+        #             "logFileHandler": {
+        #                 "class": "logging.handlers.RotatingFileHandler",
+        #                 "level": "DEBUG",
+        #                 "formatter": "baseFormatter",
+        #                 "filename": f"{os.path.join(dir_path, 'log2.txt')}",
+        #                 "mode": "a",
+        #                 "maxBytes": 20971520,
+        #                 "backupCount": 10
+        #             }
+        #         },
+        #         "loggers": {
+        #             "root": {
+        #                 "level": "INFO",
+        #                 "handlers": ["consoleHandler", "logFileHandler"]
+        #             }
+        #         }
+        #     }
+        #     logging.config.dictConfig(dict_config)
+        #     #logging.config.dictConfig(dict)
         elif event_type == EventType.FATAL_SYSTEM_ERROR:
             # This happens when a task calls system_panic().
             reason = fl_ctx.get_prop(key=FLContextKey.EVENT_DATA, default="")
@@ -711,3 +754,61 @@ class ClientRunner(TBI):
         task = TaskAssignment(name=task_name, task_id=task_id, data=request)
         reply = self._process_task(task, fl_ctx)
         return reply
+    
+    def _handle_configure_log(self, topic: str, request: Shareable, fl_ctx: FLContext) -> Shareable:
+        from nvflare.fuel.utils.log_utils import update_dict_filenames
+        import logging.config
+        import os
+
+        self.engine.get_workspace()
+        dir_path = self.engine.get_workspace().get_run_dir(self.job_id)
+        # dict_config = {
+        #     "version": 1,
+        #     "disable_existing_loggers": False,
+        #     "formatters": {
+        #         "baseFormatter": {
+        #             "()": "nvflare.fuel.utils.log_utils.BaseFormatter",
+        #             "fmt": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        #         },
+        #         "colorFormatter": {
+        #             "()": "nvflare.fuel.utils.log_utils.ColorFormatter",
+        #             "fmt": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        #             "level_colors": 
+        #                 {
+        #                     "DEBUG": "38",
+        #                     "INFO": "38;5;206",
+        #                     "WARNING": "33",
+        #                     "ERROR": "31",
+        #                     "CRITICAL": "31;1",
+        #                 }
+        #         }
+        #     },
+        #     "handlers": {
+        #         "consoleHandler": {
+        #             "class": "logging.StreamHandler",
+        #             "level": "DEBUG",
+        #             "formatter": "colorFormatter",
+        #             "stream": "ext://sys.stdout"
+        #         },
+        #         "logFileHandler": {
+        #             "class": "logging.handlers.RotatingFileHandler",
+        #             "level": "DEBUG",
+        #             "formatter": "baseFormatter",
+        #             "filename": f"{os.path.join(dir_path, 'log2.txt')}",
+        #             "mode": "a",
+        #             "maxBytes": 20971520,
+        #             "backupCount": 10
+        #         }
+        #     },
+        #     "loggers": {
+        #         "root": {
+        #             "level": "INFO",
+        #             "handlers": ["consoleHandler", "logFileHandler"]
+        #         }
+        #     }
+        # }
+        dict_config = update_dict_filenames(request, dir_path)
+        ##replace filename with dirpath!!!
+        logging.config.dictConfig(dict_config)
+
+        return make_reply(ReturnCode.OK)

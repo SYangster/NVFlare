@@ -212,6 +212,26 @@ def get_script_logger():
     )
 
 
+def update_dict_filenames(d, dir_path):
+    """
+    Recursively updates all 'filename' key values in a nested dictionary
+    by prepending dir_path using os.path.join.
+    
+    Args:
+        d (dict): The dictionary to update.
+        dir_path (str): The directory path to prepend.
+    
+    Returns:
+        dict: The updated dictionary.
+    """
+    for key, value in d.items():
+        if isinstance(value, dict):  # If the value is a dictionary, recurse
+            update_dict_filenames(value, dir_path)
+        elif key == "filename":  # Update the 'filename' key
+            d[key] = os.path.join(dir_path, value)
+    return d
+
+
 def replace_filenames(obj, dir_path: str = ""):
     """Update 'filename' keys in JSON objects with dir_path."""
 

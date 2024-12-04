@@ -68,6 +68,7 @@ class TrainingTopic(object):
     START_JOB = "train.start_job"
     GET_SCOPES = "train.get_scopes"
     NOTIFY_JOB_STATUS = "train.notify_job_status"
+    CONFIGURE_LOGGING = "train.configure_logging"
 
 
 class RequestHeader(object):
@@ -96,6 +97,7 @@ class SysCommandTopic(object):
     SHELL = "sys.shell"
     REPORT_RESOURCES = "resource_manager.report_resources"
     REPORT_ENV = "sys.report_env"
+    LOG_CONFIG = "sys.log_config"
 
 
 class ControlCommandTopic(object):

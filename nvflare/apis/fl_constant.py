@@ -205,6 +205,7 @@ class ReservedTopic(object):
     SYNC_RUNNER = "__sync_runner__"
     JOB_HEART_BEAT = "__job_heartbeat__"
     TASK_CHECK = "__task_check__"
+    CONFIGURE_LOG = "__configure_log__"
 
 
 class AdminCommandNames(object):
@@ -245,6 +246,7 @@ class AdminCommandNames(object):
     SHELL_TAIL = "tail"
     SHELL_GREP = "grep"
     APP_COMMAND = "app_command"
+    CONFIGURE_LOGGING = "configure_logging"
 
 
 class ServerCommandNames(object):
@@ -263,6 +265,7 @@ class ServerCommandNames(object):
     HANDLE_DEAD_JOB = "handle_dead_job"
     SERVER_STATE = "server_state"
     APP_COMMAND = "app_command"
+    CONFIGURE_LOGGING = "configure_logging"
 
 
 class ServerCommandKey(object):

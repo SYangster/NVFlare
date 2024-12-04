@@ -93,6 +93,15 @@ class JobCommandModule(CommandModule, CommandUtil, BinaryTransfer):
                     confirm=ConfirmMethod.AUTH,
                 ),
                 CommandSpec(
+                    name=AdminCommandNames.CONFIGURE_LOGGING,
+                    description="configure logging of a job",
+                    usage=f"{AdminCommandNames.CONFIGURE_LOGGING} job_id server|client|all|[client_name] [level]|[file]",
+                    handler_func=self.configure_logging,
+                    authz_func=self.authorize_job,#self.authorize_job_id,
+                    #enabled=False,
+                    #confirm=ConfirmMethod.AUTH,
+                ),
+                CommandSpec(
                     name=AdminCommandNames.START_APP,
                     description="start the FL app",
                     usage=f"{AdminCommandNames.START_APP} job_id server|client|all",
@@ -318,6 +327,68 @@ class JobCommandModule(CommandModule, CommandUtil, BinaryTransfer):
             conn.set_prop(self.TARGET_CLIENT_TOKENS, [x.token for x in clients])
             replies = self.send_request_to_clients(conn, message)
             self.process_replies_to_table(conn, replies)
+
+        conn.append_success("")
+
+    def configure_logging(self, conn: Connection, args: List[str]):
+        job_id = args[1]
+        engine = conn.app_ctx
+        if not isinstance(engine, ServerEngine):
+            raise TypeError("engine must be ServerEngine but got {}".format(type(engine)))
+        
+        target_type = args[2]
+        log_config_file = args[3]
+
+        from nvflare.fuel.utils.log_utils import read_log_config
+
+        config = read_log_config(log_config_file)
+
+        print(f"\n\t {config=} \n")
+
+        message = new_message(conn, topic=TrainingTopic.CONFIGURE_LOGGING, body=config, require_authz=False) # TODO change require_authz
+        message.set_header(RequestHeader.JOB_ID, str(job_id))
+
+        if target_type == self.TARGET_TYPE_SERVER:
+
+            engine.configure_logging(str(job_id))
+            # if not self._start_app_on_server(conn, job_id):
+            #     return
+            #conn.append_error("start_app command only supports client app start.")
+            #return
+        elif target_type == self.TARGET_TYPE_CLIENT:
+            replies = self.send_request_to_clients(conn, message)
+            self.process_replies_to_table(conn, replies)
+            # if not self._start_app_on_clients(conn, job_id):
+            #     return
+        else:
+            pass
+            # TODO specified client case
+        
+        # message = new_message(conn, topic=TrainingTopic.CONFIGURE_LOGGING, body="", require_authz=False)
+        # message.set_header(RequestHeader.JOB_ID, str(job_id))
+        # clients = engine.get_clients()
+        # if clients:
+        #     conn.set_prop(self.TARGET_CLIENT_TOKENS, [x.token for x in clients])
+        #     replies = self.send_request_to_clients(conn, message)
+        #     self.process_replies_to_table(conn, replies)
+
+        # if job_id in engine.run_processes.keys():
+        #     conn.append_error(f"Current running run_{job_id} can not be deleted.")
+        #     return
+
+        # err = engine.delete_job_id(job_id)
+        # if err:
+        #     conn.append_error(err)
+        #     return
+
+        # # ask clients to delete this RUN
+        # message = new_message(conn, topic=TrainingTopic.DELETE_RUN, body="", require_authz=False)
+        # message.set_header(RequestHeader.JOB_ID, str(job_id))
+        # clients = engine.get_clients()
+        # if clients:
+        #     conn.set_prop(self.TARGET_CLIENT_TOKENS, [x.token for x in clients])
+        #     replies = self.send_request_to_clients(conn, message)
+        #     self.process_replies_to_table(conn, replies)
 
         conn.append_success("")
 

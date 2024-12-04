@@ -297,7 +297,66 @@ class ShowStatsCommand(CommandProcessor):
         engine = fl_ctx.get_engine()
         collector = engine.get_widget(WidgetID.INFO_COLLECTOR)
         return collector.get_run_stats()
+    
 
+class ConfigureLoggingCommand(CommandProcessor):
+    """To implement the show_stats command."""
+
+    def get_command_name(self) -> str:
+        """To get the command name.
+
+        Returns: ServerCommandNames.SHOW_STATS
+
+        """
+        return ServerCommandNames.CONFIGURE_LOGGING
+
+    def process(self, data: Shareable, fl_ctx: FLContext):
+        """Called to process the abort command.
+
+        Args:
+            data: process data
+            fl_ctx: FLContext
+
+        Returns: Engine run_info
+
+        """
+        engine = fl_ctx.get_engine()
+        server_runner = fl_ctx.get_prop(FLContextKey.RUNNER)
+        # TODO more checks  
+        if server_runner:
+            server_runner.configure_logging(fl_ctx)
+        #collector = engine.get_widget(WidgetID.INFO_COLLECTOR)
+        return None
+
+
+class GetErrorsCommand(CommandProcessor):
+    """To implement the show_errors command."""
+
+    def get_command_name(self) -> str:
+        """To get the command name.
+
+        Returns: ServerCommandNames.GET_ERRORS
+
+        """
+        return ServerCommandNames.GET_ERRORS
+
+    def process(self, data: Shareable, fl_ctx: FLContext):
+        """Called to process the abort command.
+
+        Args:
+            data: process data
+            fl_ctx: FLContext
+
+        Returns: Engine run_info
+
+        """
+        engine = fl_ctx.get_engine()
+        collector = engine.get_widget(WidgetID.INFO_COLLECTOR)
+        errors = collector.get_errors()
+        if not errors:
+            errors = "No Error"
+        return errors
+    
 
 class GetErrorsCommand(CommandProcessor):
     """To implement the show_errors command."""
@@ -477,6 +536,7 @@ class ServerCommands(object):
         HandleDeadJobCommand(),
         ShowStatsCommand(),
         GetErrorsCommand(),
+        ConfigureLoggingCommand(),
         ResetErrorsCommand(),
         HeartbeatCommand(),
         ServerStateCommand(),

@@ -30,7 +30,7 @@ from nvflare.private.fed.server.admin import FedAdminServer
 from nvflare.private.fed.server.fed_server import FederatedServer
 
 
-def monitor_parent_process(runner: Runner, parent_pid, stop_event: threading.Event):
+def monitor_parent_process(runner: Runner, parent_pid, stop_event: threading.Event): #add a threading event to change config here?
     while True:
         if stop_event.is_set() or not psutil.pid_exists(parent_pid):
             runner.stop()

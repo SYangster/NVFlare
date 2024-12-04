@@ -434,3 +434,6 @@ class JobExecutor(ClientExecutor):
     def get_run_processes_keys(self):
         with self.lock:
             return [x for x in self.run_processes.keys()]
+        
+    def log_configuration(self, arg):
+        pass
