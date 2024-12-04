@@ -375,7 +375,7 @@ log_config: |
     "loggers": {
         "root": {
             "level": "INFO",
-            "handlers": ["consoleHandler", "logFileHandler", "errorFileHandler", "jsonFileHandler", "FLFileHandler"]
+            "handlers": ["consoleHandler", "logFileHandler", "errorFileHandler", "jsonFileHandler"]
         }
     }
   }

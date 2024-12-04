@@ -554,3 +554,15 @@ class ServerRunner(TBI):
     def restore(self, state_data: dict, fl_ctx: FLContext):
         self.job_id = state_data.get("job_id")
         self.current_wf_index = int(state_data.get("current_wf_index", 0))
+
+    def configure_log(self, fl_ctx: FLContext, data) -> Shareable:
+        from nvflare.fuel.utils.log_utils import update_dict_filenames
+        import logging.config
+        import os
+
+        self.engine.get_workspace()
+        dir_path = self.engine.get_workspace().get_run_dir(self.job_id)
+        dict_config = update_dict_filenames(data, dir_path)
+        logging.config.dictConfig(dict_config)
+
+        return make_reply(ReturnCode.OK)

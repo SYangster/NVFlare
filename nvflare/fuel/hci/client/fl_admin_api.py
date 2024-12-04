@@ -392,6 +392,26 @@ class FLAdminAPI(AdminAPI, FLAdminAPISpec):
         return FLAdminAPIResponse(
             APIStatus.ERROR_RUNTIME, {"message": "Runtime error: could not handle server reply."}, reply
         )
+    
+    @wrap_with_return_exception_responses
+    def configure_log(self, job_id: str) -> FLAdminAPIResponse:
+        if not job_id:
+            raise APISyntaxError("job_id is required but not specified.")
+        if not isinstance(job_id, str):
+            raise APISyntaxError("job_id must be str but got {}.".format(type(job_id)))
+        success, reply_data_full_response, reply = self._get_processed_cmd_reply_data(
+            AdminCommandNames.CONFIGURE_LOG + " " + job_id
+        )
+        if reply_data_full_response:
+            if "Configured logging job" in reply_data_full_response:
+                return FLAdminAPIResponse(
+                    APIStatus.SUCCESS,
+                    {"message": reply_data_full_response, "job_id": reply_data_full_response.split(":")[-1].strip()},
+                    reply,
+                )
+        return FLAdminAPIResponse(
+            APIStatus.ERROR_RUNTIME, {"message": "Runtime error: could not handle server reply."}, reply
+        )
 
     @wrap_with_return_exception_responses
     def list_jobs(self, options: str = None) -> FLAdminAPIResponse:

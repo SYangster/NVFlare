@@ -26,6 +26,8 @@ from nvflare.private.fed.server.admin import new_message
 from nvflare.private.fed.server.cmd_utils import CommandUtil
 from nvflare.security.logging import secure_format_exception
 
+from nvflare.private.defs import RequestHeader
+
 
 def _parse_replies(conn, replies):
     """parses resources from replies."""
@@ -61,6 +63,14 @@ class SystemCommandModule(CommandModule, CommandUtil):
                     visible=True,
                 ),
                 CommandSpec(
+                    name="configure_site_log",
+                    description="get the system info",
+                    usage="configure_site_log server|client <client-name> ...",
+                    handler_func=self.configure_site_log,
+                    authz_func=self.authorize_server_operation,
+                    visible=True,
+                ),
+                CommandSpec(
                     name="report_resources",
                     description="get the resources info",
                     usage="report_resources server | client <client-name> ...",
@@ -86,7 +96,7 @@ class SystemCommandModule(CommandModule, CommandUtil):
                 ),
             ],
         )
-
+    
     def sys_info(self, conn: Connection, args: [str]):
         if len(args) < 2:
             conn.append_error("syntax error: missing site names")
@@ -110,9 +120,70 @@ class SystemCommandModule(CommandModule, CommandUtil):
 
         if target_type == self.TARGET_TYPE_CLIENT:
             message = new_message(conn, topic=SysCommandTopic.SYS_INFO, body="", require_authz=True)
+
+            #message.set_header(RequestHeader.JOB_ID, job_id)
             replies = self.send_request_to_clients(conn, message)
             self._process_replies(conn, replies)
             return
+
+        conn.append_string("invalid target type {}. Usage: sys_info server|client <client-name>".format(target_type))
+
+    def configure_site_log(self, conn: Connection, args: [str]):
+        if len(args) < 2:
+            conn.append_error("syntax error: missing site names")
+            return
+        
+        print(f"\n\tHEREEE {args=}\n")
+
+        target_type = args[1]
+
+        log_config_file = args[2]
+
+        from nvflare.fuel.utils.log_utils import read_log_config
+
+        config = read_log_config(log_config_file)
+
+        if target_type == self.TARGET_TYPE_SERVER:
+            infos = dict(psutil.virtual_memory()._asdict())
+
+            table = conn.append_table(["Metrics", "Value"])
+
+            for k, v in infos.items():
+                table.add_row([str(k), str(v)])
+            table.add_row(
+                [
+                    "available_percent",
+                    "%.1f" % (psutil.virtual_memory().available * 100 / psutil.virtual_memory().total),
+                ]
+            )
+
+            #from nvflare.fuel.utils.log_utils import read_log_config
+            from nvflare.private.fed.server.server_engine import ServerEngine
+
+            engine = conn.app_ctx
+            if not isinstance(engine, ServerEngine):
+                raise TypeError("engine must be ServerEngine but got {}".format(type(engine)))
+
+               #def configure_log(self, fl_ctx: FLContext, data) -> Shareable:
+            from nvflare.fuel.utils.log_utils import update_dict_filenames
+            import logging.config
+
+            engine.get_workspace()
+            dir_path = engine.get_workspace().get_root_dir()
+            dict_config = update_dict_filenames(config, dir_path)
+            logging.config.dictConfig(dict_config)
+
+            #return make_reply(ReturnCode.OK)
+
+            return
+
+        if target_type == self.TARGET_TYPE_CLIENT:
+            message = new_message(conn, topic=SysCommandTopic.CONFIGURE_LOG, body=config, require_authz=True)
+
+            #message.set_header(RequestHeader.JOB_ID, job_id)
+            replies = self.send_request_to_clients(conn, message)
+            self._process_replies(conn, replies)
+            return make_reply(ReturnCode.OK)
 
         conn.append_string("invalid target type {}. Usage: sys_info server|client <client-name>".format(target_type))
 

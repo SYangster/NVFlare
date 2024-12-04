@@ -420,6 +420,14 @@ class ClientEngine(ClientEngineInternalSpec, StreamableEngine):
         self.client_executor.abort_task(job_id)
 
         return "Abort signal has been sent to the current task."
+    
+    # def configure_log(self, log_config_file_path: dict, dir_path=""):
+    #     from nvflare.fuel.utils.log_utils import read_log_config
+    #     import logging.config
+
+    #     dict_config = read_log_config(log_config_file_path, dir_path)
+    #     logging.config.dictConfig(dict_config)
+    #     #logging.config.dictConfig(dict)
 
     def shutdown(self) -> str:
         self.logger.info("Client shutdown...")

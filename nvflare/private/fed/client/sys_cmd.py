@@ -28,6 +28,10 @@ from nvflare.private.admin_defs import Message
 from nvflare.private.defs import SysCommandTopic
 from nvflare.private.fed.client.admin import RequestProcessor
 
+from nvflare.private.fed.client.client_engine_internal_spec import ClientEngineInternalSpec
+from nvflare.private.aux_runner import AuxMsgTarget
+from nvflare.private.defs import RequestHeader
+
 
 class SysInfoProcessor(RequestProcessor):
     def get_topics(self) -> List[str]:
@@ -80,3 +84,48 @@ class ReportEnvProcessor(RequestProcessor):
         }
         message = Message(topic="reply_" + req.topic, body=json.dumps(env))
         return message
+    
+from nvflare.private.admin_defs import ok_reply
+class ConfigSiteLogProcessor(RequestProcessor):
+    def get_topics(self) -> [str]:
+        return [SysCommandTopic.CONFIGURE_LOG]
+
+    def process(self, req: Message, app_ctx) -> Message:
+        engine = app_ctx
+        fl_ctx = engine.new_context()
+        #engine.get_all_clients()
+        # from nvflare.apis.fl_constant import ReservedTopic
+        # from nvflare.apis.shareable import Shareable
+
+
+        from nvflare.fuel.utils.log_utils import update_dict_filenames
+        import logging.config
+
+
+        dir_path = fl_ctx.get_prop(FLContextKey.WORKSPACE_ROOT)
+        dict_config = update_dict_filenames(req.body, dir_path)
+        logging.config.dictConfig(dict_config)
+        
+        
+        # engine.send_aux_request(
+        #     targets=None,
+        #     topic=ReservedTopic.END_RUN,
+        #     request=Shareable(),
+        #     timeout=0.0,
+        #     fl_ctx=fl_ctx,
+        #     optional=True,
+        #     secure=False,
+        # )
+
+        # fl_ctx = engine.new_context()
+        # assert isinstance(fl_ctx, FLContext)
+
+        # from nvflare.fuel.utils.log_utils import read_log_config
+        # import logging.config
+
+        # logging.config.dictConfig
+
+        result = ""
+        if not result:
+            result = "OK"
+        return ok_reply(topic=f"reply_{req.topic}", body=result)

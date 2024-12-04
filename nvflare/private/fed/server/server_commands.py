@@ -297,7 +297,37 @@ class ShowStatsCommand(CommandProcessor):
         engine = fl_ctx.get_engine()
         collector = engine.get_widget(WidgetID.INFO_COLLECTOR)
         return collector.get_run_stats()
+    
 
+class ConfigureLoggingCommand(CommandProcessor):
+    """To implement the show_stats command."""
+
+    def get_command_name(self) -> str:
+        """To get the command name.
+
+        Returns: ServerCommandNames.SHOW_STATS
+
+        """
+        return ServerCommandNames.CONFIGURE_LOG
+
+    def process(self, data: Shareable, fl_ctx: FLContext):
+        """Called to process the abort command.
+
+        Args:
+            data: process data
+            fl_ctx: FLContext
+
+        Returns: Engine run_info
+
+        """
+        engine = fl_ctx.get_engine()
+        server_runner = fl_ctx.get_prop(FLContextKey.RUNNER)
+        # TODO more checks  
+        if server_runner:
+            server_runner.configure_log(fl_ctx, data)
+        #collector = engine.get_widget(WidgetID.INFO_COLLECTOR)
+        return None
+    
 
 class GetErrorsCommand(CommandProcessor):
     """To implement the show_errors command."""
@@ -477,6 +507,7 @@ class ServerCommands(object):
         HandleDeadJobCommand(),
         ShowStatsCommand(),
         GetErrorsCommand(),
+        ConfigureLoggingCommand(),
         ResetErrorsCommand(),
         HeartbeatCommand(),
         ServerStateCommand(),
