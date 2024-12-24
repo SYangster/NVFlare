@@ -268,7 +268,7 @@ their own app_XXXX job definition, but the same root folder for the workspace ma
 
   simulator/
   ├── local
-  │   └── log.config
+  │   └── log_config.json
   ├── simulate_job
   │   ├── app_server
   │   │   ├── FL_global_model.pt
@@ -378,7 +378,7 @@ structure is consistent with the format of the POC real world application.
   simulator/
   ├── server
   │   ├── local
-  │   │   └── log.config
+  │   │   └── log_config.json
   │   ├── log.txt
   │   ├── pool_stats
   │   │   └── simulator_cell_stats.json
@@ -466,7 +466,7 @@ structure is consistent with the format of the POC real world application.
   │   └── startup
   ├── site-1
   │   ├── local
-  │   │   └── log.config
+  │   │   └── log_config.json
   │   ├── log.txt
   │   ├── simulate_job
   │   │   ├── app_site-1
@@ -479,7 +479,7 @@ structure is consistent with the format of the POC real world application.
   │   └── startup
   ├── site-2
   │   ├── local
-  │   │   └── log.config
+  │   │   └── log_config.json
   │   ├── log.txt
   │   ├── simulate_job
   │   │   ├── app_site-2
@@ -499,8 +499,8 @@ structure is consistent with the format of the POC real world application.
 
 Allow Simulator local resources configuration
 ==============================================
-In 2.4.0, we only support the ``log.config`` setting file within the simulator workspace ``startup`` folder to be used to change the log format.
+In 2.4.0, we only support the ``log_config.json`` setting file within the simulator workspace ``startup`` folder to be used to change the log format.
 
 In 2.5.0, we enable the full ``local`` and ``startup`` contents to be configured under the simulator workspace. All the POC real world application
-local settings can be placed within the ``workspace/local`` folder and be deployed to each site. The ``log.config`` file is also moved to
+local settings can be placed within the ``workspace/local`` folder and be deployed to each site. The ``log_config.json`` file is also moved to
 this ``workspace/local`` folder.

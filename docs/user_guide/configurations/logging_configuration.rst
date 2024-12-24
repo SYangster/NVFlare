@@ -4,9 +4,53 @@
 NVIDIA FLARE Logging Configuration
 ##################################
 
-NVFLARE uses python logging, specifically fileConfig( configure https://docs.python.org/3/library/logging.config.html) 
+NVFLARE uses python logging, specifically dictConfig( configure https://docs.python.org/3/library/logging.config.html)
 
 We provide default logging configuration files for NVFLARE sub-systems. You can overwrite these logging configurations by modifying the configuration files. 
+
+**********************************
+Logging Configuration and Features
+**********************************
+
+Logger Hierarchy
+================
+
+Formatters
+==========
+
+BaseFormatter
+--------------
+
+ColorFormatter
+--------------
+
+JsonFormatter
+-------------
+
+Filters
+=======
+
+LoggerNameFilter
+----------------
+
+Handlers
+========
+
+consoleHandler
+--------------
+
+logFileHandler
+--------------
+
+errorFileHandler
+----------------
+
+jsonFileHandler
+---------------
+
+FLFileHandler
+-------------
+
 
 ************************************
 Logging configuration files location
@@ -17,18 +61,18 @@ Startup kits log configurations
 
 The log configuration files are located in the startup kits under the local directory.
 
-If you search for the ``log.config.*`` files in the startup kits workspace, you will find the following files:
+If you search for the ``log_config.json.*`` files in the startup kits workspace, you will find the following files:
 
 .. code-block:: shell
 
-    find . -name "log.config.*"
+    find . -name "log_config.json.*"
 
-    ./site-1/local/log.config.default
-    ./site-2/local/log.config.default
-    ./server1/local/log.config.default
+    ./site-1/local/log_config.json.default
+    ./site-2/local/log_config.json.default
+    ./server1/local/log_config.json.default
 
-The server ``log.config.default`` is the default logging configuration used by the FL Server and clients. To overwrite the default,
-you can change ``log.config.default`` to ``log.config`` and modify the configuration.
+The server ``log_config.json.default`` is the default logging configuration used by the FL Server and clients. To overwrite the default,
+you can change ``log_config.json.default`` to ``log_config.json`` and modify the configuration.
 
 POC log configurations
 ======================
@@ -36,19 +80,19 @@ Similarly, if you search the POC workspace, you will find the following:
 
 .. code-block:: shell
 
-    find /tmp/nvflare/poc  -name "log.config*"
+    find /tmp/nvflare/poc  -name "log_config.json*"
 
-    /tmp/nvflare/poc/server/local/log.config
-    /tmp/nvflare/poc/site-1/local/log.config
-    /tmp/nvflare/poc/site-2/local/log.config
+    /tmp/nvflare/poc/server/local/log_config.json
+    /tmp/nvflare/poc/site-1/local/log_config.json
+    /tmp/nvflare/poc/site-2/local/log_config.json
 
-You can directly modify ``log.config`` to make changes.
+You can directly modify ``log_config.json`` to make changes.
 
 Simulator log configuration
 ===========================
 
-Simulator logging configuration uses the default log configuration. If you want to overwrite the default configuration, you can add ``log.config`` to
-``<simulator_workspace>/startup/log.config``.
+Simulator logging configuration uses the default log configuration. If you want to overwrite the default configuration, you can add ``log_config.json`` to
+``<simulator_workspace>/startup/log_config.json``.
 
 For example, for hello-numpy-sag examples, the CLI command is:
 
@@ -56,7 +100,7 @@ For example, for hello-numpy-sag examples, the CLI command is:
 
     nvflare simulator -w /tmp/nvflare/hello-numpy-sag -n 2 -t 2 hello-world/hello-numpy-sag/jobs/hello-numpy-sag
 
-If the workspace is ``/tmp/nvflare/hello-numpy-sag/``, then you can add log.config in ``/tmp/nvflare/hello-numpy-sag/startup/log.config`` to overwrite the default one. 
+If the workspace is ``/tmp/nvflare/hello-numpy-sag/``, then you can add log_config.json in ``/tmp/nvflare/hello-numpy-sag/startup/log_config.json`` to overwrite the default one.
 
 Configuration logging
 =====================
@@ -119,3 +163,13 @@ we can do the following:
 
     [formatter_fullFormatter]
     format=%(asctime)s - %(name)s - %(levelname)s - %(message)s
+
+
+**************************************
+Dynamic Logging Configuration Commands
+**************************************
+
+
+overview of two Commands
+
+link to other place

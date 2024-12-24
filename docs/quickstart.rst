@@ -328,7 +328,7 @@ and codes, logs of the output, site and global models, cross-site validation res
   /tmp/nvflare/jobs/workdir
   ├── server
   │   ├── local
-  │   │   └── log.config
+  │   │   └── log_config.json
   │   ├── log.txt
   │   ├── pool_stats
   │   │   └── simulator_cell_stats.json
@@ -347,7 +347,7 @@ and codes, logs of the output, site and global models, cross-site validation res
   ├── site-1
   │   ├── cifar_net.pth
   │   ├── local
-  │   │   └── log.config
+  │   │   └── log_config.json
   │   ├── log.txt
   │   ├── simulate_job
   │   │   ├── app_site-1
@@ -358,7 +358,7 @@ and codes, logs of the output, site and global models, cross-site validation res
   ├── site-2
   │   ├── cifar_net.pth
   │   ├── local
-  │   │   └── log.config
+  │   │   └── log_config.json
   │   ├── log.txt
   │   ├── simulate_job
   │   │   ├── app_site-2
