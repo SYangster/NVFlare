@@ -722,7 +722,10 @@ class ClientRunner(TBI):
         return reply
 
     def configure_job_log(self, request: Shareable, fl_ctx: FLContext) -> Shareable:
+        #try:
         dynamic_log_config(request, self.engine.get_workspace(), self.job_id)
+        # except Exception as e:
+        #     return error_reply(secure_format_exception(e))
         self.log_info(fl_ctx, f"configured job {self.job_id} server log")
 
-        return make_reply(ReturnCode.OK)
+        #return make_reply(ReturnCode.OK)

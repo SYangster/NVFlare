@@ -26,6 +26,7 @@ from nvflare.private.defs import RequestHeader, ScopeInfoKey, TrainingTopic
 from nvflare.private.fed.client.admin import RequestProcessor
 from nvflare.private.fed.client.client_engine_internal_spec import ClientEngineInternalSpec
 from nvflare.private.fed.utils.fed_utils import get_scope_info
+from nvflare.security.logging import secure_format_exception
 
 
 class StartAppProcessor(RequestProcessor):
@@ -161,11 +162,19 @@ class ConfigureJobLogProcessor(RequestProcessor):
         engine = app_ctx
         if not isinstance(engine, ClientEngineInternalSpec):
             raise TypeError("engine must be ClientEngineInternalSpec, but got {}".format(type(engine)))
-
+        
         job_id = req.get_header(RequestHeader.JOB_ID)
-        engine.configure_job_log(job_id, req.body)
 
-        return ok_reply(topic=f"reply_{req.topic}", body="")
+        return engine.configure_job_log(job_id, req.body)
+
+        # client_name = engine.get_client_name()
+        # job_id = req.get_header(RequestHeader.JOB_ID)
+        # try:
+        #     engine.configure_job_log(job_id, req.body)
+        # except Exception as e:
+        #     return error_reply(secure_format_exception(e))
+
+        # return ok_reply(topic=f"reply_{req.topic}", body=f"successfully configured {client_name} job {job_id} log")
 
 
 class ClientStatusProcessor(RequestProcessor):
