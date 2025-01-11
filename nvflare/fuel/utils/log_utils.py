@@ -79,6 +79,7 @@ class BaseFormatter(logging.Formatter):
 
         """
         self.fmt = fmt
+        print(f"\n\n\n\tInitializing BaseFormatter with {fmt=} {datefmt=} {style=}\n\n\n")
         super().__init__(fmt=fmt, datefmt=datefmt, style=style)
 
     def format(self, record):
@@ -108,24 +109,31 @@ class ColorFormatter(BaseFormatter):
             logger_colors (Dict[str, str]): dict of loggername: ANSI color. Defaults to {}.
 
         """
+        print(f"\n\n\n\tInitializing ColorFormatter with {fmt=} {datefmt=} {style=} {level_colors=} {logger_colors=}\n\n\n")
         super().__init__(fmt=fmt, datefmt=datefmt, style=style)
         self.level_colors = level_colors
         self.logger_colors = logger_colors
 
     def format(self, record):
-        super().format(record)
+        record_s = super().format(record)
 
         # Apply level_colors based on record levelname
         log_color = self.level_colors.get(record.levelname, "reset")
 
         # Apply logger_color to logger_names if INFO or below
         if record.levelno <= logging.INFO:
-            log_color = self.logger_colors.get(record.name, log_color)
+            for name, color in self.logger_colors.items():
+                if record.fullName.startswith(name) or record.name == name: #TODO make it so the lowest level overries the highest level ones
+                    log_color = color
+                
+            #log_color = self.logger_colors.get(record.name, log_color)
 
-        log_fmt = ANSIColor.colorize(self.fmt, log_color)
+        #log_fmt = ANSIColor.colorize(self.fmt, log_color)
 
-        formatter = logging.Formatter(log_fmt)
-        return formatter.format(record)
+        #formatter = logging.Formatter(log_fmt)
+        #formatter = logging.Formatter(self.fmt)
+        return ANSIColor.colorize(record_s, log_color)
+        #return super().format(record)
 
 
 class JsonFormatter(BaseFormatter):
@@ -182,7 +190,7 @@ class JsonFormatter(BaseFormatter):
 
         record.message = record.getMessage()
         bracket_fields = self.extract_bracket_fields(record.message) if self.extract_brackets else None
-        record.asctime = self.formatTime(record)
+        record.asctime = self.formatTime(record, self.datefmt)
 
         formatted_message_dict = self.formatMessage(record)
         message_dict = {k: v for k, v in formatted_message_dict.items() if k != "message"}
@@ -209,7 +217,8 @@ class LoggerNameFilter(logging.Filter):
 
     def filter(self, record):
         name = record.fullName if hasattr(record, "fullName") else record.name
-        return any(name.startswith(logger_name) for logger_name in self.logger_names)
+        #return any(name.startswith(logger_name) for logger_name in self.logger_names)
+        return any(name.startswith(logger_name) or name == record.name for logger_name in self.logger_names)
 
 
 def get_module_logger(module=None, name=None):
