@@ -4,6 +4,7 @@ on:
   # Trigger the workflow if any web/** files are modified
   push:
     branches:
+      - "fix_prismjs_backup"
       - "main"
       - "2.5"
       - "2.6"
